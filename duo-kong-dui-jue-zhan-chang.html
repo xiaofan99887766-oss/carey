@@ -1,0 +1,2986 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c9'/%3E%3Cstop offset='.55' stop-color='%23ff7fa5'/%3E%3Cstop offset='1' stop-color='%23ffb224'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='48' height='48' rx='11' fill='%230a0f1d'/%3E%3Cg fill='url(%23g)'%3E%3Cpath opacity='.55' d='M8 20 C12 23.5 14.2 28.2 13.4 33.8 C8.8 31.4 6.4 25.8 8 20 Z'/%3E%3Cpath opacity='.55' d='M40 20 C36 23.5 33.8 28.2 34.6 33.8 C39.2 31.4 41.6 25.8 40 20 Z'/%3E%3Cpath opacity='.8' d='M15.5 12 C19.6 17.4 20.2 24 16.6 31.2 C11 26.8 11.2 17.8 15.5 12 Z'/%3E%3Cpath opacity='.8' d='M32.5 12 C28.4 17.4 27.8 24 31.4 31.2 C37 26.8 36.8 17.8 32.5 12 Z'/%3E%3Cpath d='M24 6.5 C28.3 13.8 29.2 21.2 24 29.5 C18.8 21.2 19.7 13.8 24 6.5 Z'/%3E%3Cpath opacity='.9' d='M11.5 35 C17.8 39.6 30.2 39.6 36.5 35 C31.4 42.8 16.6 42.8 11.5 35 Z'/%3E%3C/g%3E%3C/svg%3E" />
+    <title>多空对决战场</title>
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2rem; }
+    </style>
+    <style>
+      :root{
+        --bg:#070b14; --bg2:#0a0f1d;
+        --panel:#101827; --panel2:#0c1322; --line:#1e2a42;
+        --ink:#e8eef7; --ink2:#9db0c9; --ink3:#5f7292;
+        --blue:#3d9bff; --blue2:#7cc2ff; --blue-dim:#12325e;
+        --red:#ff5470; --red2:#ff8fa3; --red-dim:#5e1626;
+        --amber:#ffb224; --green:#2fd08c;
+        --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+        --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      }
+      *{box-sizing:border-box}
+      html,body{margin:0;padding:0}
+      body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
+        background-image:radial-gradient(1100px 500px at 50% -180px,#12203c 0%,transparent 60%);}
+      a{color:var(--blue2)}
+      .wrap{max-width:1240px;margin:0 auto;padding:10px 12px 28px}
+
+      /* ---------- header / controls ---------- */
+      header.topbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 2px 10px}
+      .brand{font-weight:800;font-size:19px;letter-spacing:.5px;margin-right:4px;white-space:nowrap}
+      .brand .b{color:var(--blue2)} .brand .r{color:var(--red2)}
+      .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line);
+        border-radius:999px;background:var(--panel);font-size:13px;color:var(--ink2);min-height:32px}
+      .pill .dot{width:8px;height:8px;border-radius:50%;background:#64748b;flex:none}
+      .pill.live .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+      .pill.warn .dot{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+      .pill.bad .dot{background:var(--red)}
+      .tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+      .tab{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink2);
+        padding:6px 13px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;min-height:36px}
+      .tab:hover{color:var(--ink);border-color:#31456b}
+      .tab.on{background:var(--blue-dim);border-color:var(--blue);color:#fff}
+      .tab .star{color:var(--amber);font-size:12px;margin-left:2px}
+      .searchbox{position:relative;flex:1 1 190px;max-width:340px;min-width:170px}
+      .searchbox input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+        border-radius:8px;padding:7px 10px;font-size:14px;min-height:38px;outline:none}
+      .searchbox input:focus{border-color:var(--blue)}
+      .search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#0e1626;border:1px solid var(--line);
+        border-radius:10px;overflow:hidden;z-index:60;box-shadow:0 14px 34px rgba(0,0,0,.55);display:none;max-height:320px;overflow-y:auto}
+      .search-results.open{display:block}
+      .search-results button{display:flex;width:100%;gap:8px;align-items:baseline;background:none;border:0;color:var(--ink);
+        padding:9px 12px;font-size:14px;cursor:pointer;text-align:left;min-height:40px}
+      .search-results button:hover,.search-results button.hot{background:#16233c}
+      .search-results .code{font-weight:700;font-family:var(--mono)}
+      .search-results .nm{color:var(--ink2);font-size:13px}
+      .search-results .notfound{padding:10px 12px;color:var(--red2);font-size:14px}
+      .iconbtn{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink2);
+        border-radius:8px;padding:6px 11px;font-size:14px;cursor:pointer;min-height:38px;white-space:nowrap}
+      .iconbtn:hover{color:var(--ink)}
+      .iconbtn.on{color:var(--amber);border-color:var(--amber)}
+      .chipsrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 2px 8px;font-size:12.5px;color:var(--ink3)}
+      .chipsrow .lbl{margin-right:2px}
+      .chip{appearance:none;border:1px solid var(--line);background:var(--panel2);color:var(--ink2);border-radius:999px;
+        padding:3px 10px;font-size:12.5px;cursor:pointer;min-height:32px}
+      .chip:hover{color:var(--ink)}
+
+      /* ---------- layout ---------- */
+      .grid{display:grid;grid-template-columns:1fr;gap:12px}
+      .card{background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);
+        border-radius:14px;padding:14px 16px}
+      .card h2{margin:0 0 10px;font-size:14px;color:var(--ink2);font-weight:700;letter-spacing:.4px;
+        display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+      .card h2 .sub{font-weight:400;color:var(--ink3);font-size:12.5px}
+      .row3{display:grid;grid-template-columns:1fr;gap:12px}
+      @media (min-width:960px){ .row3{grid-template-columns:1fr 1fr 1.25fr} }
+
+      /* ---------- price + power ---------- */
+      .price-flex{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-start}
+      .price-main{min-width:210px}
+      .price-now{font-family:var(--mono);font-size:clamp(30px,5.2vw,44px);font-weight:700;line-height:1.1;letter-spacing:-.5px}
+      .price-now.up{color:var(--blue2)} .price-now.dn{color:var(--red2)}
+      .chg{font-family:var(--mono);font-size:16px;font-weight:700}
+      .chg.up{color:var(--blue2)} .chg.dn{color:var(--red2)}
+      .sym-name{color:var(--ink2);font-size:14px}
+      .stat-grid{display:grid;grid-template-columns:repeat(2,minmax(104px,1fr));gap:6px 20px;flex:1;min-width:240px}
+      .stat-grid .k{color:var(--ink3);font-size:12px}
+      .stat-grid .v{font-family:var(--mono);font-size:14.5px}
+      .power-wrap{margin-top:14px}
+      .power-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink2);margin-bottom:6px}
+      .power-head .pct{font-family:var(--mono);font-size:19px;font-weight:700}
+      .power-head .pct.b{color:var(--blue2)} .power-head .pct.r{color:var(--red2)}
+      .powerbar{position:relative;height:22px;border-radius:7px;overflow:hidden;background:var(--red-dim);display:flex}
+      .powerbar .fill-b{background:linear-gradient(90deg,#1d6fd1,var(--blue));height:100%;transition:width .45s ease}
+      .powerbar .frontmark{position:absolute;top:-2px;bottom:-2px;width:3px;background:#fff;border-radius:2px;
+        box-shadow:0 0 10px #fff;transition:left .45s ease}
+      .powerbar.surging-b{box-shadow:0 0 0 2px var(--blue),0 0 18px rgba(61,155,255,.5)}
+      .powerbar.surging-r{box-shadow:0 0 0 2px var(--red),0 0 18px rgba(255,84,112,.5)}
+      .formula{margin-top:10px;font-size:12.5px;color:var(--ink3);line-height:1.65}
+      .formula b{color:var(--ink2);font-weight:600}
+      .comps{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:4px;font-family:var(--mono);font-size:12.5px}
+      .comps .pos{color:var(--blue2)} .comps .neg{color:var(--red2)}
+      .surge-tag{display:none;font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:6px}
+      .surge-tag.b{display:inline-block;background:var(--blue-dim);color:var(--blue2)}
+      .surge-tag.r{display:inline-block;background:var(--red-dim);color:var(--red2)}
+
+      /* ---------- battle ---------- */
+      .battle-card{padding:10px}
+      .battle-stage{position:relative;border-radius:10px;overflow:hidden;background:#05080f}
+      canvas#battle{display:block;width:100%;height:auto;aspect-ratio:16/7.2;min-height:230px}
+      @media (max-width:640px){ canvas#battle{aspect-ratio:4/3.4} }
+      .banner{position:absolute;left:50%;top:16%;transform:translate(-50%,-50%) scale(.9);padding:10px 22px;border-radius:10px;
+        font-size:clamp(17px,3.4vw,26px);font-weight:800;letter-spacing:1px;opacity:0;pointer-events:none;white-space:nowrap;
+        transition:opacity .25s ease,transform .25s ease;z-index:5;text-align:center}
+      .banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+      .banner.whale{background:rgba(20,14,2,.82);border:1px solid var(--amber);color:var(--amber)}
+      .banner.win-b{background:rgba(6,26,54,.88);border:1px solid var(--blue);color:var(--blue2)}
+      .banner.win-r{background:rgba(54,8,20,.88);border:1px solid var(--red);color:var(--red2)}
+      .banner .amt{font-family:var(--mono);font-size:.72em;display:block;margin-top:2px;letter-spacing:0}
+      .cheer-float{position:absolute;top:34%;font-size:17px;font-weight:800;pointer-events:none;z-index:4;
+        text-shadow:0 2px 8px rgba(0,0,0,.8);animation:cheerfly 3.2s linear forwards;white-space:nowrap}
+      .cheer-float.b{color:var(--blue2)} .cheer-float.r{color:var(--red2)}
+      @keyframes cheerfly{from{transform:translateX(0);opacity:0}8%{opacity:1}88%{opacity:1}to{transform:translateX(var(--fly));opacity:0}}
+      @media (prefers-reduced-motion: reduce){ .cheer-float{animation-duration:.1s} }
+      .cheer-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 4px 2px}
+      .cheer-btn{appearance:none;border-radius:9px;padding:8px 18px;font-size:15px;font-weight:800;cursor:pointer;min-height:42px;border:1px solid}
+      .cheer-btn.b{background:var(--blue-dim);border-color:var(--blue);color:var(--blue2)}
+      .cheer-btn.r{background:var(--red-dim);border-color:var(--red);color:var(--red2)}
+      .cheer-btn:active{transform:scale(.96)}
+      .cheer-note{color:var(--ink3);font-size:12.5px}
+      .cheer-count{font-family:var(--mono);font-size:13px;color:var(--ink2)}
+
+      /* ---------- taker / book ---------- */
+      .win-block{margin-bottom:13px}
+      .win-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink2);margin-bottom:4px}
+      .win-head .wl{font-weight:700;color:var(--ink)}
+      .cov{font-size:12px;color:var(--amber);font-weight:700}
+      .cov.ok{color:var(--ink3);font-weight:400}
+      .vsbar{display:flex;height:16px;border-radius:5px;overflow:hidden;background:var(--red-dim)}
+      .vsbar .fb{background:linear-gradient(90deg,#1d6fd1,var(--blue));transition:width .3s ease}
+      .win-nums{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px;margin-top:3px;gap:8px}
+      .win-nums .b{color:var(--blue2)} .win-nums .r{color:var(--red2);text-align:right}
+      .win-nums small{display:block;color:var(--ink3);font-family:var(--sans);font-size:11px}
+      .backfill-note{font-size:12.5px;color:var(--amber);margin-bottom:10px;min-height:1em}
+      .backfill-note.ok{color:var(--ink3)}
+      canvas.mini{display:block;width:100%;height:86px}
+      .book-line{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;padding:2px 0;color:var(--ink2)}
+      .book-line b{color:var(--ink);font-weight:600}
+      .depth-block{margin:9px 0}
+      .depth-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink2);margin-bottom:3px}
+      .dbar{display:flex;height:13px;border-radius:4px;overflow:hidden;background:#1a2438}
+      .dbar .db{background:var(--blue);opacity:.85;transition:width .3s}
+      .dbar .da{background:var(--red);opacity:.85;transition:width .3s;margin-left:auto}
+
+      /* ---------- whale feed ---------- */
+      .feed-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+      .fchip{appearance:none;border:1px solid var(--line);background:var(--panel2);color:var(--ink2);border-radius:999px;
+        padding:4px 12px;font-size:13px;cursor:pointer;min-height:34px}
+      .fchip.on{background:#3a2c07;border-color:var(--amber);color:var(--amber)}
+      .feed-note{font-size:12.5px;color:var(--ink3)}
+      .tablewrap{max-height:430px;overflow-y:auto}
+      table.feed{width:100%;border-collapse:collapse;font-size:13px}
+      table.feed th{position:sticky;top:0;background:var(--panel);color:var(--ink3);font-weight:600;text-align:right;
+        padding:6px 6px;font-size:12px;z-index:1}
+      table.feed th:first-child,table.feed td:first-child{text-align:left}
+      table.feed td{padding:6px;border-top:1px solid #16203a;font-family:var(--mono);text-align:right;white-space:nowrap}
+      table.feed td.side-b{color:var(--blue2);font-weight:700}
+      table.feed td.side-r{color:var(--red2);font-weight:700}
+      .tier{font-family:var(--sans);font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
+      .tier.shell{background:#1c2c47;color:var(--blue2)}
+      .tier.heavy{background:#3a2c07;color:var(--amber)}
+      .tier.whale{background:#4d1030;color:#ff9ecb}
+      tr.row-r td.side-b,tr.row-r td.side-r{font-family:var(--sans)}
+      .feed-empty{color:var(--ink3);font-size:13px;padding:14px 4px;text-align:center}
+
+      footer{margin-top:16px;color:var(--ink3);font-size:12.5px;line-height:1.7;text-align:center}
+      .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    </style>
+    <style>
+      /* ================= v2 redesign: cinematic war-room ================= */
+      body{background:#05070f;background-image:radial-gradient(1200px 560px at 50% -200px,#16294e 0%,transparent 62%),radial-gradient(900px 500px at 88% 30%,rgba(94,22,38,.20) 0%,transparent 55%),radial-gradient(900px 500px at 8% 30%,rgba(18,50,94,.22) 0%,transparent 55%)}
+      .wrap{max-width:1280px;padding:12px 14px 30px}
+      .card{background:linear-gradient(180deg,rgba(22,34,58,.92),rgba(10,16,30,.95));border:1px solid #26395e;border-radius:16px;
+        box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(150,180,230,.09)}
+      .card h2{color:#c6d5ec}
+
+      /* layout: battlefield is the hero, everything else follows */
+      .grid{display:flex;flex-direction:column}
+      .battle-card{padding:12px;position:relative}
+
+      /* numbered review badges — small, quiet, corner */
+      .num-badge{position:absolute;top:7px;right:9px;width:17px;height:17px;border-radius:50%;z-index:8;pointer-events:none;
+        display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:700;
+        color:#aebfe0;background:rgba(5,9,18,.72);border:1px solid #31456b;opacity:.5}
+      .tabs-wrap{position:relative;display:flex;align-items:center}
+      .tabs-wrap .num-badge{top:-7px;right:-7px}
+      .power-wrap{position:relative}
+      .power-wrap .num-badge{top:-4px;right:0}
+
+      /* ---------- top bar ---------- */
+      .brand{font-size:21px;text-shadow:0 2px 14px rgba(61,155,255,.35)}
+      .tab{border-radius:9px;background:rgba(16,24,39,.85)}
+      .tab.on{background:linear-gradient(180deg,#1d6fd1,#175a9f);border-color:#4aa3ff;color:#fff;box-shadow:0 4px 14px rgba(61,155,255,.35)}
+      .music-ctl{position:relative;display:flex;align-items:center;gap:6px;margin-left:auto}
+      .music-ctl .num-badge{top:-7px;right:-7px}
+      .music-toggle{border-color:#8a6a1f;color:#ffcf5c;font-weight:700;background:linear-gradient(180deg,#2a2008,#191204);min-height:38px}
+      .music-toggle.on{color:#0d1526;background:linear-gradient(180deg,#ffd27c,#ffb224);border-color:#ffd27c;box-shadow:0 4px 16px rgba(255,178,36,.4)}
+      .music-style{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+      .mstyle{appearance:none;border:0;background:var(--panel);color:var(--ink2);padding:6px 11px;font-size:13px;cursor:pointer;min-height:38px}
+      .mstyle.on{background:#3a2c07;color:var(--amber);font-weight:700}
+
+      /* ---------- price & power ---------- */
+      .coin-badge{display:inline-block;background:linear-gradient(180deg,#43350c,#241a04);border:1px solid #9a7a24;color:#ffcf5c;
+        font-weight:700;padding:3px 11px;border-radius:7px;font-size:13.5px;letter-spacing:.3px;box-shadow:inset 0 1px 0 rgba(255,210,110,.25)}
+      .price-now{font-size:clamp(40px,6.4vw,58px);letter-spacing:-1px;line-height:1.08;
+        background:linear-gradient(180deg,#ffffff 0%,#ffc9d6 34%,#ff7d9c 68%,#ff3d68 100%);
+        -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+        filter:drop-shadow(0 3px 16px rgba(255,84,112,.35))}
+      .chg{display:inline-block;padding:2px 10px;border-radius:7px;font-size:15px}
+      .chg.up{background:var(--blue-dim);color:var(--blue2)} .chg.dn{background:var(--red-dim);color:var(--red2)}
+      .powerbar{height:27px;border-radius:9px;background:repeating-linear-gradient(45deg,#93273d 0 14px,#701c2e 14px 28px);
+        box-shadow:inset 0 2px 6px rgba(0,0,0,.5),0 4px 18px rgba(0,0,0,.35)}
+      .powerbar .fill-b{background:repeating-linear-gradient(45deg,#2f83e6 0 14px,#1d63b8 14px 28px);
+        box-shadow:inset 0 0 14px rgba(156,205,255,.55);transition:width .18s ease-out}
+      .powerbar .frontmark{top:50%;bottom:auto;width:25px;height:25px;border-radius:50%;
+        background:radial-gradient(circle at 42% 38%,#fffbe9 0%,#ffd27c 42%,#ff9d2e 72%,rgba(255,157,46,.1) 100%);
+        transform:translate(-50%,-50%);box-shadow:0 0 16px 5px rgba(255,196,80,.8),0 0 38px 14px rgba(255,150,50,.35);transition:left .18s ease-out}
+      .powerbar.surging-b{box-shadow:0 0 0 2px var(--blue),0 0 26px rgba(61,155,255,.65)}
+      .powerbar.surging-r{box-shadow:0 0 0 2px var(--red),0 0 26px rgba(255,84,112,.65)}
+      .power-head .pct{font-size:22px}
+      .surge-tag{font-size:13px;padding:4px 11px;border-radius:999px}
+      .basis-line{margin-top:10px;font-size:13px;color:var(--ink2);line-height:1.7}
+      .basis-line .pos{color:var(--blue2);font-family:var(--mono)}
+      .basis-line .neg{color:var(--red2);font-family:var(--mono)}
+      .suppress-line{margin-top:3px;color:var(--amber);font-weight:700;font-size:14px;min-height:1.25em;text-shadow:0 0 12px rgba(255,178,36,.35)}
+      details.formula{margin-top:8px}
+      details.formula summary{cursor:pointer;color:var(--ink2);font-size:12.5px;font-weight:600;min-height:2rem;display:flex;align-items:center}
+      details.formula summary:hover{color:var(--ink)}
+      details.formula .formula-in{font-size:12.5px;color:var(--ink3);line-height:1.65;padding:2px 0 4px}
+      details.formula .formula-in b{color:var(--ink2)}
+
+      /* ---------- battle stage overlays ---------- */
+      .battle-stage{border:1px solid #2c4066;border-radius:12px;box-shadow:inset 0 0 60px rgba(0,0,0,.5),0 8px 30px rgba(0,0,0,.4)}
+      canvas#battle{aspect-ratio:auto;min-height:300px}
+      @media (min-width:641px){ canvas#battle{min-height:420px} }
+      .side-tag{position:absolute;top:10px;z-index:3;display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:9px;
+        background:rgba(5,10,20,.58);backdrop-filter:blur(4px);font-size:13.5px;font-weight:700;pointer-events:none}
+      .side-tag.b{left:10px;color:var(--blue2)} .side-tag.r{right:10px;color:var(--red2)}
+      .side-tag .sq{display:inline-flex;width:21px;height:21px;border-radius:6px;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800}
+      .side-tag.b .sq{background:linear-gradient(180deg,#4aa3ff,#1d6fd1)}
+      .side-tag.r .sq{background:linear-gradient(180deg,#ff7285,#d92b4b)}
+      .patrol-tag{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:3;display:none;align-items:center;gap:6px;
+        background:rgba(5,10,20,.7);border:1px solid rgba(255,178,36,.65);color:var(--amber);padding:5px 14px;border-radius:999px;
+        font-size:12.5px;font-weight:600;white-space:nowrap;pointer-events:none}
+      .bpm-chip{position:absolute;right:10px;bottom:10px;z-index:3;display:none;background:rgba(5,10,20,.62);backdrop-filter:blur(4px);
+        color:#cfe0ff;padding:5px 12px;border-radius:999px;font-size:12.5px;font-family:var(--mono);pointer-events:none;border:1px solid rgba(90,130,190,.4)}
+      .legend{padding:9px 6px 1px;color:var(--ink3);font-size:12.5px;text-align:center;letter-spacing:.2px}
+      .banner{border-width:1.5px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+      .cheer-float{font-size:18px;letter-spacing:.5px}
+
+      /* ---------- entry ceremony ---------- */
+      .ceremony{position:fixed;inset:0;z-index:200;background:radial-gradient(1000px 600px at 50% 42%,#101d3a 0%,#05070f 70%);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;
+        transition:opacity .6s ease;animation:cerhide .6s ease 2.3s forwards}
+      @keyframes cerhide{to{opacity:0;visibility:hidden}}
+      .ceremony.done{opacity:0;pointer-events:none}
+      .ceremony .gate{position:absolute;top:0;bottom:0;width:52%;background:linear-gradient(180deg,#0b1526,#060a13);z-index:1;
+        transition:transform 1.15s cubic-bezier(.7,0,.25,1) .55s}
+      .ceremony .gate.l{left:0;border-right:2px solid #31456b;box-shadow:inset -30px 0 50px rgba(0,0,0,.6)}
+      .ceremony .gate.r{right:0;border-left:2px solid #31456b;box-shadow:inset 30px 0 50px rgba(0,0,0,.6)}
+      .ceremony.go .gate.l{transform:translateX(-102%)}
+      .ceremony.go .gate.r{transform:translateX(102%)}
+      .ceremony .beam{position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);z-index:2;
+        background:linear-gradient(180deg,transparent,#ffd27c 30%,#ffd27c 70%,transparent);opacity:0;transition:opacity .4s ease}
+      .ceremony.go .beam{opacity:.9}
+      .ceremony .cflags{position:absolute;top:12%;left:0;right:0;display:flex;justify-content:space-between;padding:0 7%;z-index:3;pointer-events:none}
+      .ceremony .cflag{width:86px;height:58px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+        font-size:30px;font-weight:800;color:#fff;transform:scaleX(0);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+      .ceremony .cflag.b{background:linear-gradient(135deg,#2f83e6,#173f6e);transform-origin:left center;border:1.5px solid #7cc2ff}
+      .ceremony .cflag.r{background:linear-gradient(225deg,#e6455f,#6e1a2c);transform-origin:right center;border:1.5px solid #ff8fa3}
+      .ceremony.go .cflag{animation:unfurl .7s cubic-bezier(.6,0,.3,1.4) .8s forwards}
+      @keyframes unfurl{to{transform:scaleX(1)}}
+      .ceremony .ring{position:absolute;left:50%;top:46%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;
+        border:2px solid rgba(255,210,110,.75);opacity:0;z-index:2}
+      .ceremony.go .ring{animation:drumring 1s ease-out .95s}
+      .ceremony.go .ring.r2{animation-delay:1.35s}
+      @keyframes drumring{0%{opacity:.9;transform:scale(.25)}100%{opacity:0;transform:scale(2.6)}}
+      .ceremony .cword{position:relative;z-index:4;font-size:clamp(64px,15vw,124px);font-weight:900;letter-spacing:.12em;line-height:1;
+        background:linear-gradient(180deg,#fffbe9 5%,#ffd27c 45%,#ff9d2e 80%,#c46a12 100%);
+        -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+        filter:drop-shadow(0 6px 30px rgba(255,160,50,.45));opacity:0;transform:scale(1.7)}
+      .ceremony.go .cword{animation:wordin .55s cubic-bezier(.2,1.4,.4,1) 1s forwards}
+      @keyframes wordin{to{opacity:1;transform:scale(1)}}
+      .ceremony .csub{position:relative;z-index:4;margin-top:14px;color:#c6d5ec;font-size:15px;letter-spacing:.55em;text-indent:.55em;opacity:0}
+      .ceremony.go .csub{animation:fadein .6s ease 1.45s forwards}
+      .ceremony .cskip{position:absolute;bottom:26px;left:0;right:0;text-align:center;z-index:4;color:#5f7292;font-size:12.5px;opacity:0}
+      .ceremony.go .cskip{animation:fadein .6s ease 1.7s forwards}
+      @keyframes fadein{to{opacity:1}}
+      @media (prefers-reduced-motion: reduce){
+        .ceremony .gate,.ceremony .cflag,.ceremony .cword{transition:none;animation-duration:.01s!important}
+      }
+    </style>
+    <style>
+      /* ================= v3: layout follows the reference board ================= */
+      .brand-block{display:flex;align-items:center;gap:11px;margin-right:4px}
+      .brand-text{display:flex;flex-direction:column;gap:2px}
+      .brand-badge{flex:none;width:47px;height:47px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+        background:linear-gradient(160deg,rgba(255,127,165,.16),rgba(16,24,39,.9) 55%,rgba(255,178,36,.13));
+        border:1px solid rgba(255,183,140,.38);box-shadow:0 4px 16px rgba(0,0,0,.45),0 0 14px rgba(255,127,165,.14),inset 0 1px 0 rgba(255,205,160,.18)}
+      .brand-badge svg{display:block}
+      @media (max-width:640px){ .brand-badge{width:41px;height:41px;border-radius:11px} .brand-badge svg{width:27px;height:27px} }
+      .brand-main{font-size:21px;font-weight:900;letter-spacing:2.5px;color:#eef3ff;line-height:1.05;text-shadow:0 2px 14px rgba(61,155,255,.35);white-space:nowrap}
+      .brand-main .w{color:var(--blue2)}
+      .brand-sub{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink2);letter-spacing:3px}
+      .live-badge{font-size:10.5px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:5px;background:#3a4358;color:#aebfe0}
+      .live-badge.on{background:linear-gradient(180deg,#e6455f,#c22340);color:#fff;box-shadow:0 0 12px rgba(230,69,95,.55)}
+      .live-badge.warn{background:#6b5410;color:#ffd27c}
+      .top-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+      .top-right .music-ctl{margin-left:0}
+      .lang-btn{font-weight:800;min-width:48px;text-align:center}
+      .coinrow{display:flex;gap:8px;align-items:stretch;padding:2px 2px 10px;flex-wrap:wrap}
+      .coincard{flex:1 1 140px;max-width:225px;appearance:none;text-align:left;cursor:pointer;border:1px solid var(--line);
+        background:linear-gradient(135deg,rgba(29,111,209,.22),rgba(16,24,39,.92) 58%);border-radius:12px;padding:8px 13px;color:var(--ink);min-height:62px}
+      .coincard:hover{border-color:#31456b}
+      .coincard.on{border-color:var(--blue);box-shadow:0 4px 16px rgba(61,155,255,.30)}
+      .coincard .qc-sym{font-weight:800;font-size:15px;letter-spacing:.5px}
+      .coincard .qc-price{display:block;font-family:var(--mono);font-size:17px;font-weight:700;margin-top:1px}
+      .coincard .qc-chg{font-family:var(--mono);font-size:13px;font-weight:700}
+      .coincard .qc-chg.up{color:var(--blue2)} .coincard .qc-chg.dn{color:var(--red2)}
+      .coinrow .searchbox{flex:2 1 210px;max-width:none;align-self:center}
+      .row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 2px 8px}
+      .row2 .tabs-wrap{display:flex;align-items:center}
+      .power-head{align-items:center}
+      .power-side{display:flex;align-items:center;gap:7px;white-space:nowrap}
+      .power-side .sq{display:inline-flex;width:21px;height:21px;border-radius:6px;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800;flex:none}
+      .power-side.b .sq{background:linear-gradient(180deg,#4aa3ff,#1d6fd1)}
+      .power-side.r .sq{background:linear-gradient(180deg,#ff7285,#d92b4b)}
+      .state-badge{font-size:13.5px;font-weight:800;padding:4px 13px;border-radius:999px;background:rgba(20,30,50,.85);color:var(--ink2);border:1px solid var(--line);white-space:nowrap}
+      .state-badge.b{background:var(--blue-dim);color:var(--blue2);border-color:var(--blue);box-shadow:0 0 14px rgba(61,155,255,.35)}
+      .state-badge.r{background:var(--red-dim);color:var(--red2);border-color:var(--red);box-shadow:0 0 14px rgba(255,84,112,.35)}
+      .state-badge .dotp{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px}
+      .tps-inline{color:var(--ink2);font-family:var(--mono);font-size:13.5px;margin-left:10px}
+      .shout-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:4}
+      .shout-float{position:absolute;font-size:clamp(15px,2.2vw,19px);font-weight:900;pointer-events:none;white-space:nowrap;
+        text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.65);animation:cheerfly 6s linear forwards;letter-spacing:.5px}
+      .shout-float.b{color:#8fc6ff} .shout-float.r{color:#ff9db1}
+      .bpm-chip{display:block}
+      .vol-wrap{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--ink2)}
+      .vol-wrap input[type="range"]{width:86px;accent-color:var(--amber);min-height:38px;cursor:pointer}
+      @media (max-width:640px){ .vol-wrap input[type="range"]{width:64px} }
+      .bpm-chip.off{opacity:.7}
+      .bpm-chip.b{color:#a8d4ff;border-color:rgba(61,155,255,.55)}
+      .bpm-chip.r{color:#ffb3c1;border-color:rgba(255,84,112,.55)}
+      @media (min-width:641px){ canvas#battle{min-height:400px} }
+      @media (max-width:640px){
+        canvas#battle{min-height:250px}
+        .coincard{flex:1 1 104px;padding:7px 10px;min-height:56px}
+        .coincard .qc-price{font-size:15px}
+        .brand-main{font-size:18px}
+        .power-head .pct{font-size:19px}
+        .state-badge{font-size:12px;padding:3px 9px}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-badge" role="img" aria-label="莲花标志">
+            <svg width="31" height="31" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="lotusGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffb3c9"/>
+                  <stop offset=".55" stop-color="#ff7fa5"/>
+                  <stop offset="1" stop-color="#ffb224"/>
+                </linearGradient>
+              </defs>
+              <g fill="url(#lotusGrad)" stroke="rgba(255,214,150,.45)" stroke-width=".7" stroke-linejoin="round">
+                <path opacity=".55" d="M8 20 C12 23.5 14.2 28.2 13.4 33.8 C8.8 31.4 6.4 25.8 8 20 Z"/>
+                <path opacity=".55" d="M40 20 C36 23.5 33.8 28.2 34.6 33.8 C39.2 31.4 41.6 25.8 40 20 Z"/>
+                <path opacity=".8" d="M15.5 12 C19.6 17.4 20.2 24 16.6 31.2 C11 26.8 11.2 17.8 15.5 12 Z"/>
+                <path opacity=".8" d="M32.5 12 C28.4 17.4 27.8 24 31.4 31.2 C37 26.8 36.8 17.8 32.5 12 Z"/>
+                <path d="M24 6.5 C28.3 13.8 29.2 21.2 24 29.5 C18.8 21.2 19.7 13.8 24 6.5 Z"/>
+                <path opacity=".9" d="M11.5 35 C17.8 39.6 30.2 39.6 36.5 35 C31.4 42.8 16.6 42.8 11.5 35 Z"/>
+              </g>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="brand-main">CRYPTO <span class="w">WAR</span></div>
+            <div class="brand-sub"><span id="brandSub">多空战场</span><span class="live-badge warn" id="liveBadge">连接中</span></div>
+          </div>
+        </div>
+        <span class="pill warn" id="connPill"><span class="dot"></span><span id="connText">连接中</span></span>
+        <div class="top-right">
+          <div class="music-ctl">
+            <button class="iconbtn music-toggle" id="musicBtn" aria-pressed="false">🔇 配乐关</button>
+            <span class="vol-wrap" title="音量"><span aria-hidden="true">🔊</span><input type="range" id="volSlider" min="0" max="100" value="92" step="1" aria-label="音量" /></span>
+            <div class="music-style" role="group" aria-label="配乐风格">
+              <button class="mstyle on" id="msDrums" data-style="drums" aria-pressed="true">战鼓</button>
+              <button class="mstyle" id="msEpic" data-style="epic" aria-pressed="false">史诗</button>
+            </div>
+            <span class="num-badge" aria-hidden="true">5</span>
+          </div>
+          <button class="iconbtn lang-btn" id="langBtn" aria-label="Switch language">EN</button>
+        </div>
+      </header>
+      <div class="coinrow">
+        <button class="coincard on" id="qcBTC" aria-label="BTC">
+          <span class="qc-sym">₿ BTC</span>
+          <span class="qc-price" id="qcBTCP">—</span>
+          <span class="qc-chg" id="qcBTCC">—</span>
+        </button>
+        <button class="coincard" id="qcETH" aria-label="ETH">
+          <span class="qc-sym">Ξ ETH</span>
+          <span class="qc-price" id="qcETHP">—</span>
+          <span class="qc-chg" id="qcETHC">—</span>
+        </button>
+        <div class="searchbox">
+          <input id="coinSearch" type="text" placeholder="搜索币种 / 代码 / 任意 USDT 交易对" autocomplete="off" aria-label="搜索币种" />
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="tabs-wrap"><nav class="tabs" id="coinTabs" aria-label="币种"></nav><span class="num-badge" aria-hidden="true">4</span></div>
+        <button class="iconbtn" id="favBtn" title="收藏当前币种" aria-label="收藏当前币种">☆ 收藏</button>
+      </div>
+      <div class="chipsrow" id="recentRow" style="display:none"><span class="lbl">最近：</span></div>
+      <div class="chipsrow" id="favRow" style="display:none"><span class="lbl">收藏：</span></div>
+
+      <main class="grid">
+        <!-- price + power -->
+        <section class="card" aria-label="价格与战力">
+          <div class="price-flex">
+            <div class="price-main">
+              <div class="sym-name"><span class="coin-badge"><span id="symName">BTC / USDT</span> · <span id="srcName">Binance</span></span><span class="tps-inline" id="tps">—</span></div>
+              <div class="price-now" id="priceNow">—</div>
+              <div><span class="chg" id="chg24">—</span> <span style="color:var(--ink3);font-size:13px">24h</span></div>
+            </div>
+            <div class="stat-grid">
+              <div><div class="k" id="kHi">24h 最高</div><div class="v" id="hi24">—</div></div>
+              <div><div class="k" id="kLo">24h 最低</div><div class="v" id="lo24">—</div></div>
+              <div><div class="k" id="kVol">24h 量</div><div class="v" id="volBase">—</div></div>
+              <div><div class="k" id="kAmt">24h 成交额</div><div class="v" id="vol24">—</div></div>
+            </div>
+          </div>
+          <div class="power-wrap">
+            <span class="num-badge" aria-hidden="true">1</span>
+            <div class="power-head">
+              <span class="power-side b"><span class="sq">多</span><span id="plBlue">蓝军</span><span class="pct b" id="pctBlue">50%</span></span>
+              <span class="state-badge" id="stateBadge">对峙中</span>
+              <span class="power-side r"><span class="pct r" id="pctRed">50%</span><span id="plRed">红军</span><span class="sq">空</span></span>
+            </div>
+            <div class="powerbar" id="powerBar">
+              <div class="fill-b" id="fillBlue" style="width:50%"></div>
+              <div class="frontmark" id="frontMark" style="left:50%"></div>
+            </div>
+            <div class="basis-line" id="basisLine">战况依据：—</div>
+            <div class="suppress-line" id="suppressLine"></div>
+            <details class="formula">
+              <summary id="formulaSum">公式详情</summary>
+              <div class="formula-in">
+                <span id="formulaText"><b>战力公式</b> = 价格涨跌 50%（10秒 25% + 1分钟 25%）+ 主动吃单 30%（10秒 15% + 1分钟 15%）+ ±0.5% 挂单深度 20%，
+                合成分数经 tanh 压缩并平滑，前线 = 0.5 + tanh(分数 × 1.6) × 0.5。战力只是盘面气氛的可视化，不是交易信号。
+                总攻必须同时有动量和真实成交量支撑：量一停或动量一散，总攻与压制计时立即结束。</span>
+                <div class="comps" id="compLine"></div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- battle -->
+        <section class="card battle-card" aria-label="战场">
+          <span class="num-badge" aria-hidden="true">2</span>
+          <div class="battle-stage" id="battleStage">
+            <canvas id="battle" width="960" height="432"></canvas>
+            <div class="side-tag b"><span class="sq">多</span><span id="tagBlue">蓝军 · 买方</span></div>
+            <div class="side-tag r"><span id="tagRed">卖方 · 红军</span><span class="sq">空</span></div>
+            <div class="shout-layer" id="shoutLayer"></div>
+            <div class="patrol-tag" id="patrolTag"><span id="patrolTxt">等待实时数据 · 待机巡逻</span></div>
+            <div class="bpm-chip" id="bpmChip"></div>
+            <div class="banner" id="banner"></div>
+          </div>
+          <div class="legend" id="battleLegend">步兵 = 成交 · 骑兵 = 炮弹级 · 武将 = 重炮级 · 主将大纛 = 巨鲸空袭</div>
+          <div class="cheer-bar">
+            <button class="cheer-btn b" id="cheerLong"><span id="clT">看多</span> <span class="cheer-count" id="cheerLongN">0</span></button>
+            <button class="cheer-btn r" id="cheerShort"><span id="csT">看空</span> <span class="cheer-count" id="cheerShortN">0</span></button>
+            <span class="cheer-note" id="cheerNote">本地助威 · 仅本机可见 · 不上传，计数只存在这台设备</span>
+          </div>
+        </section>
+
+        <!-- three cards -->
+        <div class="row3">
+          <section class="card" aria-label="主动买卖">
+            <h2><span id="hTaker">主动买卖（吃单）</span> <span class="sub" id="hTakerSub">蓝=主动买 · 红=主动卖</span></h2>
+            <div class="backfill-note" id="backfillNote">回填中…</div>
+            <div id="winBlocks"></div>
+            <h2 style="margin-top:14px"><span id="hFlow">近 2 分钟吃单流</span> <span class="sub" id="hFlowSub">每秒净流向</span></h2>
+            <canvas class="mini" id="flowChart" width="360" height="86"></canvas>
+          </section>
+
+          <section class="card" aria-label="订单簿">
+            <h2><span id="hBook">订单簿深度</span> <span class="sub" id="hBookSub">挂单金额（USD）</span></h2>
+            <div class="book-line"><span id="bkBidL">最佳买价</span><b id="bestBid">—</b></div>
+            <div class="book-line"><span id="bkAskL">最佳卖价</span><b id="bestAsk">—</b></div>
+            <div class="book-line"><span id="bkSpreadL">价差</span><b id="spread">—</b></div>
+            <div id="depthBlocks"></div>
+            <h2 style="margin-top:14px"><span id="hDepth">深度曲线</span> <span class="sub" id="hDepthSub">±2% 累计</span></h2>
+            <canvas class="mini" id="depthChart" width="360" height="86"></canvas>
+          </section>
+
+          <section class="card" style="position:relative" aria-label="大单动态">
+            <span class="num-badge" aria-hidden="true">3</span>
+            <h2><span id="hFeedT">大单动态</span> <span class="sub" id="feedNote">正在载入历史大单…</span></h2>
+            <div class="feed-tools" id="feedChips">
+              <button class="fchip on" id="fcAll" data-min="0">全部大单</button>
+              <button class="fchip" id="fcHeavy" data-min="heavy">重炮起</button>
+              <button class="fchip" id="fcWhale" data-min="whale">巨鲸起</button>
+            </div>
+            <div class="feed-note" id="tierNote" style="margin-bottom:6px"></div>
+            <div class="tablewrap">
+              <table class="feed">
+                <thead><tr><th id="thTime">时间</th><th id="thSide">方向</th><th id="thPrice">价格</th><th id="thQty">数量</th><th id="thAmt">金额</th><th id="thTier">级别</th></tr></thead>
+                <tbody id="feedBody"></tbody>
+              </table>
+              <div class="feed-empty" id="feedEmpty">暂无达到门槛的大单，等待成交…</div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer>
+        <span id="footerNote">行情多源自动切换：Gate.io、MEXC、Bitget 等国内可直连源优先，断线自动换源，无需翻墙。仅供娱乐参考，不构成投资建议。战力只是盘面气氛的可视化，不是交易信号。</span><br />
+        <span id="footerCredit">灵感来自 Crypto War by @0xVeryBigOrange，独立重新实现。</span>
+      </footer>
+    </div>
+
+    <!-- entry ceremony: flags, gates, 开战 — visual only, auto-dismisses, click to skip -->
+    <div class="ceremony" id="ceremony" role="presentation">
+      <div class="gate l"></div><div class="gate r"></div>
+      <div class="beam"></div>
+      <div class="cflags"><div class="cflag b">多</div><div class="cflag r">空</div></div>
+      <div class="ring"></div><div class="ring r2"></div>
+      <div class="cword">开战</div>
+      <div class="csub" id="cerSub">多 空 对 决 战 场</div>
+      <div class="cskip">点击任意处跳过</div>
+    </div>
+
+<script>
+"use strict";
+/* ================================================================
+   多空对决战场 — original implementation, written from spec.
+   Blue = longs/taker-buyers, Red = shorts/taker-sellers.
+   ================================================================ */
+
+/* ---------------- coin catalog ---------------- */
+var COINS = [
+  ["BTC","比特币"],["ETH","以太坊"],["SOL","索拉纳"],["DOGE","狗狗币"],["XRP","瑞波币"],["BNB","币安币"],
+  ["ADA","艾达币"],["LINK","预言机链"],["AVAX","雪崩"],["LTC","莱特币"],["DOT","波卡"],["TRX","波场"],
+  ["TON","通证币"],["NEAR","近协议"],["SUI","隋"],["PEPE","佩佩蛙"],["SHIB","柴犬币"],["WIF","狗帽币"],
+  ["BONK","邦克"],["ARB","仲裁币"],["OP","乐观币"],["UNI","独角兽"],["FIL","文件币"],["ATOM","宇宙币"],
+  ["APT","阿普托斯"],["ETC","以太经典"],["BCH","比特币现金"],["XLM","恒星币"],["AAVE","阿维"],["ENA","伊娜"]
+];
+var MAIN_TABS = ["BTC","ETH","SOL","DOGE","XRP","BNB"];
+
+/* ---------------- utils ---------------- */
+function $(id){ return document.getElementById(id); }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function fmtPrice(p){
+  if(!isFinite(p)||p<=0) return "—";
+  var d = p>=1000?2 : p>=100?2 : p>=1?3 : p>=0.01?5 : 8;
+  return p.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function fmtUSD(v){
+  if(!isFinite(v)) return "—";
+  var a=Math.abs(v);
+  if(a>=1e9) return "$"+(v/1e9).toFixed(2)+"B";
+  if(a>=1e6) return "$"+(v/1e6).toFixed(2)+"M";
+  if(a>=1e3) return "$"+(v/1e3).toFixed(1)+"K";
+  return "$"+v.toFixed(0);
+}
+function fmtQty(q){
+  if(!isFinite(q)) return "—";
+  if(q>=1e6) return (q/1e6).toFixed(2)+"M";
+  if(q>=1e3) return (q/1e3).toFixed(2)+"K";
+  return q.toFixed(q<1?4:3);
+}
+function fmtTime(t){
+  var d=new Date(t);
+  function p(n){return (n<10?"0":"")+n;}
+  return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+/* ---------------- persistent local prefs (this device only) ---------------- */
+var store = {
+  get:function(k,d){ try{ var v=localStorage.getItem("cw_"+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set:function(k,v){ try{ localStorage.setItem("cw_"+k,JSON.stringify(v)); }catch(e){} }
+};
+var recents = store.get("recents",[]);
+var favorites = store.get("favorites",[]);
+var cheerCounts = store.get("cheer",{long:0,short:0});
+var LANG = store.get("lang","zh");
+function T(zh,en){ return LANG==="en"? en:zh; }
+
+/* ---------------- global state ---------------- */
+var S = {
+  base:"BTC", symbol:"BTCUSDT",
+  source:"binance",            // 'binance' | 'okx'
+  connState:"connecting",      // connecting | live | reconnecting | offline
+  ws:null, wsOkx:null,
+  lastMsgAt:0, connectStartedAt:0, failSince:0,
+  reconnectTimer:null, backoff:1000, probeTimer:null, okxPingTimer:null, okxBookTimer:null,
+  price:0, prevPrice:0, open24:0, high24:0, low24:0, vol24:0, volBase24:0, chg24:0,
+  priceSamples:[],             // {t,p}
+  buckets:{},                  // epochSec -> {buyUsd,sellUsd,buyQty,sellQty}
+  dataStartMs:0,               // earliest moment our windows actually cover
+  backfillState:"pending",     // pending | ok | fail
+  liveSinceMs:0,
+  tradeTimes:[],               // recent trade timestamps for trades/sec
+  book:{bids:new Map(),asks:new Map(),lastUpdateId:0,synced:false,buffer:[]},
+  okxBook:{bids:[],asks:[]},   // arrays [price, usdValue]
+  tiers:{shell:50000,heavy:250000,whale:1000000},
+  feed:[],                     // whale/shell trades, newest first
+  feedMin:0,                   // 0 | 'heavy' | 'whale'
+  feedOldestMs:0,
+  score:0, scoreSmooth:0, front:0.5,
+  surgeSide:0, surgeSince:0, victoryAt:0,
+  lastTradeAt:0, suppressSec:0, suppressSide:0,
+  pendingMerge:null, mergeTimer:null,
+  restWeight:0, restWeightReset:Date.now(), restBackoffUntil:0,
+  gen:0,                       // generation counter to invalidate stale async work
+  provIdx:0,                   // index into PROVIDERS (China-first failover chain)
+  bnVariant:"vision",          // 'vision' | 'binance' — which Binance-compatible host
+  restBase:"https://data-api.binance.vision",
+  pollTimers:[],               // interval ids owned by the current provider
+  seenIds:{}, seenIdQueue:[],  // dedupe for polling trade feeds (MEXC / Bitget)
+  srcShort:"—"
+};
+
+/* ---------------- REST weight budget (Binance ~2400/min) ---------------- */
+function restAllowed(weight){
+  var now=Date.now();
+  if(now - S.restWeightReset > 60000){ S.restWeight=0; S.restWeightReset=now; }
+  if(now < S.restBackoffUntil) return false;
+  if(S.restWeight + weight > 2200) return false;
+  S.restWeight += weight;
+  return true;
+}
+function restFetch(url, weight){
+  if(!restAllowed(weight||1)) return Promise.reject(new Error("rest-budget"));
+  return fetch(url).then(function(r){
+    if(r.status===429 || r.status===418){
+      var ra = parseInt(r.headers.get("Retry-After")||"30",10);
+      S.restBackoffUntil = Date.now() + clamp(isFinite(ra)?ra:30,5,300)*1000;
+      throw new Error("http-"+r.status);
+    }
+    if(!r.ok) throw new Error("http-"+r.status);
+    return r.json();
+  });
+}
+
+/* ---------------- trade tiers ---------------- */
+function computeTiers(){
+  if(S.base==="BTC"){ S.tiers={shell:50000,heavy:250000,whale:1000000}; }
+  else if(S.base==="ETH"){ S.tiers={shell:25000,heavy:125000,whale:500000}; }
+  else{
+    var qv = S.vol24>0 ? S.vol24 : 5e8;
+    var shell = 50000 * Math.pow(qv/2.5e10, 0.5);   // power-law scale by 24h quote volume
+    shell = clamp(shell, 500, 25000);
+    S.tiers = { shell:shell, heavy:shell*5, whale:shell*20 };
+  }
+  $("tierNote").textContent = T("当前门槛：炮弹 ≥ ","Thresholds: shell ≥ ")+fmtUSD(S.tiers.shell)+T(" · 重炮 ≥ "," · heavy ≥ ")+fmtUSD(S.tiers.heavy)+T(" · 巨鲸 ≥ "," · whale ≥ ")+fmtUSD(S.tiers.whale);
+  var lg=$("battleLegend");
+  if(lg) lg.textContent = T("小兵 = 成交 · 炮弹 ≥ ","Soldier = trade · Shell ≥ ")+fmtUSD(S.tiers.shell)+T(" · 重炮 ≥ "," · Heavy ≥ ")+fmtUSD(S.tiers.heavy)+T(" · 空袭 ≥ "," · Airstrike ≥ ")+fmtUSD(S.tiers.whale);
+}
+function tierOf(usd){
+  if(usd>=S.tiers.whale) return "whale";
+  if(usd>=S.tiers.heavy) return "heavy";
+  if(usd>=S.tiers.shell) return "shell";
+  return null;
+}
+
+/* ---------------- aggregation ---------------- */
+function bucketAdd(t, isBuy, usd, qty){
+  var sec = Math.floor(t/1000);
+  var b = S.buckets[sec];
+  if(!b){ b = S.buckets[sec] = {buyUsd:0,sellUsd:0,buyQty:0,sellQty:0}; }
+  if(isBuy){ b.buyUsd+=usd; b.buyQty+=qty; } else { b.sellUsd+=usd; b.sellQty+=qty; }
+}
+function pruneBuckets(){
+  var cutoff = Math.floor(Date.now()/1000) - 330;
+  for(var k in S.buckets){ if(+k < cutoff) delete S.buckets[k]; }
+}
+function windowSums(sec){
+  var now = Date.now(), from = now - sec*1000;
+  var r = {buyUsd:0,sellUsd:0,buyQty:0,sellQty:0};
+  for(var k in S.buckets){
+    var t = (+k)*1000;
+    if(t >= from-999 && t <= now){
+      var b=S.buckets[k];
+      r.buyUsd+=b.buyUsd; r.sellUsd+=b.sellUsd; r.buyQty+=b.buyQty; r.sellQty+=b.sellQty;
+    }
+  }
+  return r;
+}
+function coveredSeconds(winSec){
+  if(!S.dataStartMs) return 0;
+  return clamp((Date.now()-S.dataStartMs)/1000, 0, winSec);
+}
+function priceChangeOver(sec){
+  var now=Date.now(), target=now-sec*1000, arr=S.priceSamples;
+  if(arr.length<2) return 0;
+  var then=arr[0].p;
+  for(var i=arr.length-1;i>=0;i--){ if(arr[i].t<=target){ then=arr[i].p; break; } }
+  if(!then) return 0;
+  return (S.price-then)/then;
+}
+function tradesPerSec(){
+  var now=Date.now(), from=now-5000, n=0;
+  for(var i=S.tradeTimes.length-1;i>=0;i--){ if(S.tradeTimes[i]>=from) n++; else break; }
+  return n/5;
+}
+
+/* ---------------- battle event queue ---------------- */
+var battleEvents = [];   // {kind:'shell'|'heavy'|'whale', buy:bool, usd}
+function emitBattle(kind, buy, usd){
+  if(document.hidden) return;               // drop queued trades while tab hidden
+  if(battleEvents.length>24) battleEvents.splice(0, battleEvents.length-24);
+  battleEvents.push({kind:kind, buy:buy, usd:usd});
+  if(kind==="whale") musicBoom();
+}
+
+/* ---------------- feed ---------------- */
+function addFeed(t, isBuy, price, qty, usd){
+  var tier = tierOf(usd);
+  if(!tier) return;
+  S.feed.unshift({t:t, buy:isBuy, price:price, qty:qty, usd:usd, tier:tier});
+  if(S.feed.length>120) S.feed.length=120;
+  renderFeed();
+}
+function feedThreshold(){
+  if(S.feedMin==="heavy") return S.tiers.heavy;
+  if(S.feedMin==="whale") return S.tiers.whale;
+  return S.tiers.shell;
+}
+function renderFeed(){
+  var min = feedThreshold();
+  var rows = S.feed.filter(function(f){ return f.usd>=min; }).slice(0,60);
+  var html = rows.map(function(f){
+    var badge = f.tier==="whale" ? '<span class="tier whale">'+T("巨鲸","Whale")+'</span>'
+              : f.tier==="heavy" ? '<span class="tier heavy">'+T("重炮","Heavy")+'</span>'
+              : '<span class="tier shell">'+T("炮弹","Shell")+'</span>';
+    return "<tr><td>"+fmtTime(f.t)+"</td>"+
+      '<td class="'+(f.buy?"side-b":"side-r")+'">'+(f.buy? T("买入","Buy"):T("卖出","Sell"))+"</td>"+
+      "<td>"+fmtPrice(f.price)+"</td><td>"+fmtQty(f.qty)+"</td><td>"+fmtUSD(f.usd)+"</td><td>"+badge+"</td></tr>";
+  }).join("");
+  $("feedBody").innerHTML = html;
+  $("feedEmpty").style.display = rows.length? "none":"block";
+  if(S.feedOldestMs){
+    var mins = (Date.now()-S.feedOldestMs)/60000;
+    $("feedNote").textContent = mins>=1 ? T("已载入近 ","Loaded ~")+mins.toFixed(mins<10?1:0)+T(" 分钟的大单"," min of large trades")
+                                         : T("已载入近 ","Loaded ~")+Math.max(1,Math.round(mins*60))+T(" 秒的大单","s of large trades");
+  }
+}
+
+/* ---------------- merged trade intake ----------------
+   Fills in the same millisecond on the same side merge into one taker order. */
+function intakeTrade(t, isBuy, price, qty){
+  var usd = price*qty;
+  if(t>S.lastTradeAt) S.lastTradeAt=t;
+  bucketAdd(t, isBuy, usd, qty);
+  S.tradeTimes.push(t);
+  if(S.tradeTimes.length>4000) S.tradeTimes.splice(0, S.tradeTimes.length-4000);
+  var key = t+"|"+(isBuy?"b":"s");
+  if(S.pendingMerge && S.pendingMerge.key===key){
+    S.pendingMerge.usd += usd; S.pendingMerge.qty += qty; S.pendingMerge.price = price;
+  } else {
+    flushMerge();
+    S.pendingMerge = {key:key, t:t, buy:isBuy, price:price, qty:qty, usd:usd};
+  }
+  if(!S.mergeTimer){
+    S.mergeTimer = setTimeout(function(){ S.mergeTimer=null; flushMerge(); }, 40);
+  }
+}
+function flushMerge(){
+  var m = S.pendingMerge; S.pendingMerge=null;
+  if(!m) return;
+  var tier = tierOf(m.usd);
+  if(!tier && m.usd >= S.tiers.shell*0.4) emitBattle("mini", m.buy, m.usd);
+  if(tier){
+    addFeed(m.t, m.buy, m.price, m.qty, m.usd);
+    emitBattle(tier, m.buy, m.usd);
+    if(tier==="whale") showWhaleBanner(m.buy, m.usd);
+  }
+}
+
+/* ---------------- connection status pill ---------------- */
+function setConn(state, label){
+  S.connState = state;
+  var pill = $("connPill");
+  pill.className = "pill " + (state==="live" ? "live" : (state==="offline" ? "bad" : "warn"));
+  $("connText").textContent = label;
+  var lb = $("liveBadge");
+  if(lb){
+    lb.className = "live-badge" + (state==="live" ? " on" : state==="offline" ? "" : " warn");
+    lb.textContent = state==="live" ? "LIVE" : (state==="offline" ? T("离线","OFFLINE") : T("连接中","LINKING"));
+  }
+}
+
+/* ================================================================
+   BINANCE
+   ================================================================ */
+var BN_HOSTS = {
+  vision:  { rest:"https://data-api.binance.vision", ws:"wss://data-stream.binance.vision" },
+  binance: { rest:"https://api.binance.com",         ws:"wss://stream.binance.com" }
+};
+function binanceConnect(gen){
+  var host = BN_HOSTS[S.bnVariant] || BN_HOSTS.vision;
+  S.restBase = host.rest;
+  S.srcShort = S.bnVariant==="vision" ? "Binance Vision" : "Binance";
+  setConn(S.failSince? "reconnecting":"connecting", S.failSince? "重连中":"连接中");
+  S.connectStartedAt = Date.now();
+  var sym = S.symbol.toLowerCase();
+  var url = host.ws+"/stream?streams="+sym+"@aggTrade/"+sym+"@depth@100ms/"+sym+"@miniTicker";
+  var ws;
+  try{ ws = new WebSocket(url); }catch(e){ scheduleBinanceFail(gen); return; }
+  S.ws = ws;
+  ws.onmessage = function(ev){
+    if(gen!==S.gen) return;
+    S.lastMsgAt = Date.now();
+    if(S.connState!=="live"){ S.failSince=0; S.backoff=1000; setConn("live","实时 · "+S.srcShort); }
+    var msg; try{ msg = JSON.parse(ev.data); }catch(e){ return; }
+    var d = msg.data; if(!d) return;
+    if(d.e==="aggTrade"){
+      intakeTrade(d.T, !d.m, parseFloat(d.p), parseFloat(d.q));
+      notePrice(d.T, parseFloat(d.p));
+    } else if(d.e==="24hrMiniTicker"){
+      var c=parseFloat(d.c);
+      notePrice(Date.now(), c);
+      S.open24=parseFloat(d.o); S.high24=parseFloat(d.h); S.low24=parseFloat(d.l);
+      S.vol24=parseFloat(d.q)||S.vol24;
+      S.volBase24=parseFloat(d.v)||S.volBase24;
+      if(S.open24>0) S.chg24=(c-S.open24)/S.open24;
+      computeTiers();
+    } else if(d.e==="depthUpdate"){
+      depthDiff(d);
+    }
+  };
+  ws.onclose = function(){ if(gen===S.gen) scheduleBinanceFail(gen); };
+  ws.onerror = function(){ try{ ws.close(); }catch(e){} };
+  loadSnapshot(gen);
+  backfillBinance(gen);
+  load24hREST(gen);
+}
+function notePrice(t, p){
+  if(!p || !isFinite(p)) return;
+  S.prevPrice = S.price; S.price = p;
+  S.priceSamples.push({t:t, p:p});
+  var cutoff = Date.now()-140000;
+  while(S.priceSamples.length && S.priceSamples[0].t<cutoff) S.priceSamples.shift();
+  musicPluck();
+}
+function load24hREST(gen){
+  restFetch(S.restBase+"/api/v3/ticker/24hr?symbol="+S.symbol, 2).then(function(j){
+    if(gen!==S.gen) return;
+    S.high24=parseFloat(j.highPrice); S.low24=parseFloat(j.lowPrice);
+    S.vol24=parseFloat(j.quoteVolume); S.volBase24=parseFloat(j.volume); S.chg24=parseFloat(j.priceChangePercent)/100;
+    if(!S.price) S.price=parseFloat(j.lastPrice);
+    computeTiers();
+  }).catch(function(){});
+}
+/* depth snapshot + diff sync */
+function loadSnapshot(gen){
+  S.book.synced=false; S.book.buffer=[];
+  restFetch(S.restBase+"/api/v3/depth?symbol="+S.symbol+"&limit=1000", 50).then(function(s){
+    if(gen!==S.gen) return;
+    S.book.lastUpdateId = s.lastUpdateId;
+    S.book.bids.clear(); S.book.asks.clear();
+    s.bids.forEach(function(l){ S.book.bids.set(parseFloat(l[0]), parseFloat(l[1])); });
+    s.asks.forEach(function(l){ S.book.asks.set(parseFloat(l[0]), parseFloat(l[1])); });
+    var buf = S.book.buffer; S.book.buffer=[];
+    buf.forEach(function(d){ if(d.u > S.book.lastUpdateId) applyDiff(d); });
+    S.book.synced = true;
+  }).catch(function(){
+    if(gen===S.gen) setTimeout(function(){ if(gen===S.gen && (S.source==="binance"||S.source==="vision")) loadSnapshot(gen); }, 4000);
+  });
+}
+function applyDiff(d){
+  d.b.forEach(function(l){ var p=parseFloat(l[0]), q=parseFloat(l[1]); if(q===0) S.book.bids.delete(p); else S.book.bids.set(p,q); });
+  d.a.forEach(function(l){ var p=parseFloat(l[0]), q=parseFloat(l[1]); if(q===0) S.book.asks.delete(p); else S.book.asks.set(p,q); });
+  S.book.lastUpdateId = d.u;
+}
+function depthDiff(d){
+  if(!S.book.synced){ if(S.book.buffer.length<800) S.book.buffer.push(d); return; }
+  if(d.U <= S.book.lastUpdateId+1 && d.u >= S.book.lastUpdateId+1) applyDiff(d);
+  else if(d.u < S.book.lastUpdateId) { /* stale, ignore */ }
+  else { S.book.synced=false; loadSnapshot(S.gen); }
+}
+/* book analytics from a Map of price->qty */
+function bookSideSums(){
+  var mid = S.price || 0;
+  var out = {bid05:0,ask05:0,bid1:0,ask1:0,bestBid:0,bestAsk:0,bidCurve:[],askCurve:[]};
+  if(S.source==="okx"){
+    var bb=0, ba=Infinity;
+    S.okxBook.bids.forEach(function(l){ if(l[0]>bb) bb=l[0]; });
+    S.okxBook.asks.forEach(function(l){ if(l[0]<ba) ba=l[0]; });
+    out.bestBid=bb||0; out.bestAsk=(ba===Infinity?0:ba);
+    if(!mid) mid=(out.bestBid+out.bestAsk)/2 || 0;
+    S.okxBook.bids.forEach(function(l){ addToDepth(out,"bid",l[0],l[1],mid); });
+    S.okxBook.asks.forEach(function(l){ addToDepth(out,"ask",l[0],l[1],mid); });
+    return out;
+  }
+  S.book.bids.forEach(function(q,p){ if(p>out.bestBid) out.bestBid=p; addToDepth(out,"bid",p,p*q,mid); });
+  S.book.asks.forEach(function(q,p){ if(!out.bestAsk||p<out.bestAsk) out.bestAsk=p; addToDepth(out,"ask",p,p*q,mid); });
+  return out;
+}
+function addToDepth(out, side, price, usd, mid){
+  if(!mid) return;
+  var dist = Math.abs(price-mid)/mid;
+  if(side==="bid"){
+    if(price>=mid*0.995) out.bid05+=usd;
+    if(price>=mid*0.99) out.bid1+=usd;
+    if(dist<=0.02) out.bidCurve.push([price,usd]);
+  } else {
+    if(price<=mid*1.005) out.ask05+=usd;
+    if(price<=mid*1.01) out.ask1+=usd;
+    if(dist<=0.02) out.askCurve.push([price,usd]);
+  }
+}
+
+/* -------- Binance backfill: 1s klines (taker-buy fields) + aggTrades whale history -------- */
+function backfillBinance(gen){
+  S.backfillState="pending"; S.dataStartMs=0;
+  var attempt=0;
+  function tryKlines(){
+    if(gen!==S.gen) return;
+    attempt++;
+    restFetch(S.restBase+"/api/v3/klines?symbol="+S.symbol+"&interval=1s&limit=300", 2).then(function(rows){
+      if(gen!==S.gen) return;
+      if(!rows || !rows.length) throw new Error("empty");
+      rows.forEach(function(r){
+        var sec = Math.floor(r[0]/1000);
+        var totalQ = parseFloat(r[7]), tbQ = parseFloat(r[10]);
+        var totalB = parseFloat(r[5]), tbB = parseFloat(r[9]);
+        var b = S.buckets[sec] || (S.buckets[sec]={buyUsd:0,sellUsd:0,buyQty:0,sellQty:0});
+        b.buyUsd+=tbQ; b.sellUsd+=Math.max(0,totalQ-tbQ);
+        b.buyQty+=tbB; b.sellQty+=Math.max(0,totalB-tbB);
+        var close=parseFloat(r[4]);
+        S.priceSamples.push({t:r[6], p:close});
+      });
+      S.priceSamples.sort(function(a,b){return a.t-b.t;});
+      S.dataStartMs = rows[0][0];
+      S.backfillState="ok";
+    }).catch(function(){
+      if(gen!==S.gen) return;
+      if(attempt<3){ setTimeout(tryKlines, 1200*attempt); }
+      else { S.backfillState="fail"; if(!S.dataStartMs) S.dataStartMs = S.liveSinceMs || Date.now(); }
+    });
+  }
+  tryKlines();
+  /* whale history */
+  restFetch(S.restBase+"/api/v3/aggTrades?symbol="+S.symbol+"&limit=1000", 2).then(function(rows){
+    if(gen!==S.gen || !rows || !rows.length) return;
+    S.feedOldestMs = rows[0].T;
+    var items=[];
+    rows.forEach(function(r){
+      var p=parseFloat(r.p), q=parseFloat(r.q), usd=p*q;
+      var tier=tierOf(usd);
+      if(tier) items.push({t:r.T, buy:!r.m, price:p, qty:q, usd:usd, tier:tier});
+    });
+    items.sort(function(a,b){return b.t-a.t;});
+    S.feed = items.concat(S.feed).slice(0,120);
+    renderFeed();
+  }).catch(function(){ $("feedNote").textContent=T("历史大单载入失败，仅显示实时大单","History failed — live large trades only"); });
+}
+
+/* -------- Binance failure / reconnect -------- */
+function scheduleBinanceFail(gen){
+  if(gen!==S.gen) return;
+  if(!S.failSince) S.failSince=Date.now();
+  if(S.source==="binance" || S.source==="vision"){
+    /* one quick reconnect on the same host, then move down the China-first chain */
+    if(Date.now()-S.failSince > 6000){ failoverNext(); return; }
+    setConn("reconnecting","重连中");
+    clearTimeout(S.reconnectTimer);
+    S.reconnectTimer=setTimeout(function(){
+      if(gen!==S.gen) return;
+      closeSockets();
+      binanceConnect(gen);
+    }, S.backoff);
+    S.backoff = Math.min(S.backoff*2, 15000);
+  }
+}
+
+/* ================================================================
+   OKX fallback
+   ================================================================ */
+function okxInst(){ return S.base+"-USDT"; }
+function okxConnect(gen){
+  S.source="okx"; S.srcShort="OKX";
+  setConn("connecting","连接中 · OKX");
+  S.connectStartedAt=Date.now();
+  var ws;
+  try{ ws = new WebSocket("wss://ws.okx.com:8443/ws/v5/public"); }catch(e){ okxFail(gen); return; }
+  S.wsOkx = ws;
+  ws.onopen = function(){
+    ws.send(JSON.stringify({op:"subscribe",args:[
+      {channel:"trades", instId:okxInst()},
+      {channel:"tickers", instId:okxInst()}
+    ]}));
+  };
+  ws.onmessage = function(ev){
+    if(gen!==S.gen) return;
+    if(ev.data==="pong") { S.lastMsgAt=Date.now(); return; }
+    S.lastMsgAt = Date.now();
+    if(S.connState!=="live"){ S.failSince=0; setConn("live","实时 · OKX"); }
+    var msg; try{ msg=JSON.parse(ev.data); }catch(e){ return; }
+    if(!msg.data) return;
+    if(msg.arg && msg.arg.channel==="trades"){
+      msg.data.forEach(function(tr){
+        intakeTrade(parseInt(tr.ts,10), tr.side==="buy", parseFloat(tr.px), parseFloat(tr.sz));
+        notePrice(parseInt(tr.ts,10), parseFloat(tr.px));
+      });
+    } else if(msg.arg && msg.arg.channel==="tickers"){
+      var d=msg.data[0];
+      var last=parseFloat(d.last);
+      notePrice(Date.now(), last);
+      S.open24=parseFloat(d.open24h); S.high24=parseFloat(d.high24h); S.low24=parseFloat(d.low24h);
+      S.vol24=parseFloat(d.volCcy24h)||S.vol24;
+      S.volBase24=parseFloat(d.vol24h)||S.volBase24;
+      if(S.open24>0) S.chg24=(last-S.open24)/S.open24;
+      computeTiers();
+    }
+  };
+  ws.onclose=function(){ if(gen===S.gen) okxFail(gen); };
+  ws.onerror=function(){ try{ws.close();}catch(e){} };
+  clearInterval(S.okxPingTimer);
+  S.okxPingTimer=setInterval(function(){ try{ if(ws.readyState===1) ws.send("ping"); }catch(e){} }, 20000);
+  okxBookPoll(gen);
+  okxBackfill(gen);
+}
+function okxFail(gen){
+  if(gen!==S.gen) return;
+  if(!S.failSince) S.failSince=Date.now();
+  if(Date.now()-S.failSince > 6000){ failoverNext(); return; }
+  setConn("reconnecting","重连中");
+  clearTimeout(S.reconnectTimer);
+  S.reconnectTimer=setTimeout(function(){
+    if(gen!==S.gen) return;
+    closeSockets();
+    okxConnect(gen);
+  }, Math.min(S.backoff,15000));
+  S.backoff=Math.min(S.backoff*2,30000);
+}
+function okxBookPoll(gen){
+  clearInterval(S.okxBookTimer);
+  function poll(){
+    if(gen!==S.gen || S.source!=="okx") return;
+    fetch("https://www.okx.com/api/v5/market/books-full?instId="+okxInst()+"&sz=400").then(function(r){return r.json();}).then(function(j){
+      if(gen!==S.gen || !j.data || !j.data[0]) return;
+      var d=j.data[0];
+      S.okxBook.bids = d.bids.map(function(l){ var p=parseFloat(l[0]); return [p, p*parseFloat(l[1])]; });
+      S.okxBook.asks = d.asks.map(function(l){ var p=parseFloat(l[0]); return [p, p*parseFloat(l[1])]; });
+    }).catch(function(){});
+  }
+  poll();
+  S.okxBookTimer=setInterval(poll, 3000);
+}
+function okxBackfill(gen){
+  S.backfillState="pending"; S.dataStartMs=0;
+  var pages=0, oldest=Infinity, items=[];
+  function next(after){
+    if(gen!==S.gen) return;
+    pages++;
+    var url="https://www.okx.com/api/v5/market/history-trades?instId="+okxInst()+"&type=1&limit=100"+(after?("&after="+after):"");
+    fetch(url).then(function(r){return r.json();}).then(function(j){
+      if(gen!==S.gen) return;
+      var rows=(j.data||[]);
+      if(!rows.length){ finish(); return; }
+      rows.forEach(function(tr){
+        var t=parseInt(tr.ts,10), p=parseFloat(tr.px), q=parseFloat(tr.sz), usd=p*q;
+        if(t<oldest) oldest=t;
+        bucketAdd(t, tr.side==="buy", usd, q);
+        var tier=tierOf(usd);
+        if(tier) items.push({t:t, buy:tr.side==="buy", price:p, qty:q, usd:usd, tier:tier});
+      });
+      if(pages<5 && rows.length===100){ next(rows[rows.length-1].tradeId); }
+      else finish();
+    }).catch(function(){
+      if(gen!==S.gen) return;
+      if(pages<3){ setTimeout(function(){ next(after); }, 1200); }
+      else { S.backfillState="fail"; if(!S.dataStartMs) S.dataStartMs=S.liveSinceMs||Date.now(); }
+    });
+  }
+  function finish(){
+    if(oldest!==Infinity){
+      S.dataStartMs=oldest; S.feedOldestMs=oldest; S.backfillState="ok";
+      items.sort(function(a,b){return b.t-a.t;});
+      S.feed = items.concat(S.feed).slice(0,120);
+      renderFeed();
+    } else {
+      S.backfillState="fail"; if(!S.dataStartMs) S.dataStartMs=S.liveSinceMs||Date.now();
+    }
+  }
+  next(null);
+}
+/* (removed: the old Binance probe — the provider chain below now owns
+   failover, and stability beats hopping back to a preferred host) */
+
+/* ================================================================
+   CHINA-FIRST PROVIDER CHAIN
+   Binance / OKX are unreachable for many mainland-China users without
+   a VPN, so the chain tries direct-access exchanges first and only
+   falls through to Binance / OKX when the direct sources fail.
+   Order: Gate.io (WS) → MEXC (poll) → Bitget (poll) →
+          Binance Vision (WS, market-data-only host) → Binance (WS) → OKX (WS)
+   Every provider feeds the same engine: intakeTrade / notePrice /
+   S.book depth maps / backfill buckets.
+   ================================================================ */
+var PROVIDERS = ["gate","mexc","bitget","vision","binance","okx"];
+var PROVIDER_LABEL = {
+  gate:   { short:"Gate.io",        full:"Gate.io · 国内直连" },
+  mexc:   { short:"MEXC",           full:"MEXC · 国内直连" },
+  bitget: { short:"Bitget",         full:"Bitget · 国内直连" },
+  vision: { short:"Binance Vision", full:"Binance Vision" },
+  binance:{ short:"Binance",        full:"Binance" },
+  okx:    { short:"OKX",            full:"OKX" }
+};
+function fetchTimeout(url, ms){
+  return new Promise(function(resolve, reject){
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var to = setTimeout(function(){ if(ctl) ctl.abort(); reject(new Error("timeout")); }, ms||4500);
+    fetch(url, ctl? {signal:ctl.signal} : {}).then(function(r){
+      clearTimeout(to);
+      if(!r.ok) throw new Error("http-"+r.status);
+      return r.json();
+    }).then(resolve).catch(function(e){ clearTimeout(to); reject(e); });
+  });
+}
+function providerSkippable(name){
+  /* Gate / MEXC / Bitget spot here are wired for USDT pairs only */
+  if((name==="gate"||name==="mexc"||name==="bitget") && !/USDT$/.test(S.symbol)) return true;
+  return false;
+}
+function providerHealth(name){
+  var pair = S.base+"_USDT";
+  if(name==="gate")   return fetchTimeout("https://api.gateio.ws/api/v4/spot/tickers?currency_pair="+pair, 4500);
+  if(name==="mexc")   return fetchTimeout("https://api.mexc.com/api/v3/ticker/24hr?symbol="+S.symbol, 4500);
+  if(name==="bitget") return fetchTimeout("https://api.bitget.com/api/v2/spot/market/tickers?symbol="+S.symbol, 4500);
+  if(name==="vision") return fetchTimeout("https://data-api.binance.vision/api/v3/ping", 4500);
+  if(name==="binance")return fetchTimeout("https://api.binance.com/api/v3/ping", 4500);
+  if(name==="okx")    return fetchTimeout("https://www.okx.com/api/v5/market/ticker?instId="+okxInst(), 4500);
+  return Promise.reject(new Error("unknown"));
+}
+function startChain(){
+  S.provIdx = 0;
+  tryProvider(S.gen);
+}
+function tryProvider(gen){
+  if(gen!==S.gen) return;
+  while(S.provIdx < PROVIDERS.length && providerSkippable(PROVIDERS[S.provIdx])) S.provIdx++;
+  if(S.provIdx >= PROVIDERS.length){
+    setConn("offline","已离线 · 仍在自动换源重试");
+    setTimeout(function(){ if(gen===S.gen) startChain(); }, 9000);
+    return;
+  }
+  var name = PROVIDERS[S.provIdx];
+  S.source = name;
+  S.srcShort = PROVIDER_LABEL[name].short;
+  $("srcName").textContent = PROVIDER_LABEL[name].full;
+  setConn(S.failSince? "reconnecting":"connecting", (S.failSince? "换源重连 · ":"连接中 · ")+S.srcShort);
+  S.connectStartedAt = Date.now();
+  providerHealth(name).then(function(){
+    if(gen!==S.gen) return;
+    connectProvider(name, gen);
+  }).catch(function(){
+    if(gen!==S.gen) return;
+    S.provIdx++;
+    tryProvider(gen);
+  });
+}
+function connectProvider(name, gen){
+  if(name==="gate") gateConnect(gen);
+  else if(name==="mexc") mexcConnect(gen);
+  else if(name==="bitget") bitgetConnect(gen);
+  else if(name==="vision"){ S.bnVariant="vision"; binanceConnect(gen); }
+  else if(name==="binance"){ S.bnVariant="binance"; binanceConnect(gen); }
+  else if(name==="okx") okxConnect(gen);
+}
+function failoverNext(){
+  S.gen++;
+  closeSockets();
+  if(!S.failSince) S.failSince=Date.now();
+  S.backoff=1000; S.lastMsgAt=0;
+  S.provIdx++;
+  if(S.provIdx >= PROVIDERS.length) S.provIdx = 0;   /* wrap: keep cycling all sources */
+  setConn("reconnecting","换源重连中");
+  tryProvider(S.gen);
+}
+function markLive(short){
+  S.lastMsgAt = Date.now();
+  if(S.connState!=="live"){ S.failSince=0; S.backoff=1000; setConn("live","实时 · "+short); }
+}
+function everyPoll(fn, ms){
+  var id = setInterval(fn, ms);
+  S.pollTimers.push(id);
+  return id;
+}
+function setBookFromArrays(bids, asks){
+  /* bids/asks: [[price, qty], ...] — fills the shared depth maps */
+  S.book.bids.clear(); S.book.asks.clear();
+  bids.forEach(function(l){ var p=parseFloat(l[0]), q=parseFloat(l[1]); if(p>0 && q>0) S.book.bids.set(p,q); });
+  asks.forEach(function(l){ var p=parseFloat(l[0]), q=parseFloat(l[1]); if(p>0 && q>0) S.book.asks.set(p,q); });
+  S.book.synced = true;
+}
+function seenTrade(id){
+  if(id==null) return false;
+  if(S.seenIds[id]) return true;
+  S.seenIds[id]=1; S.seenIdQueue.push(id);
+  if(S.seenIdQueue.length>6000){ var old=S.seenIdQueue.splice(0,3000); old.forEach(function(k){ delete S.seenIds[k]; }); }
+  return false;
+}
+/* For feeds whose rows carry no unique id (MEXC aggTrades returns a:null):
+   keep the previous poll's row fingerprints as a multiset and return only
+   the rows that were not already in it. */
+function freshRows(rows, keyFn){
+  var prev = S.lastPollKeys || {};
+  var counts = {};
+  rows.forEach(function(r){ var k=keyFn(r); counts[k]=(counts[k]||0)+1; });
+  var fresh = rows.filter(function(r){
+    var k=keyFn(r);
+    if(prev[k]>0){ prev[k]--; return false; }
+    return true;
+  });
+  S.lastPollKeys = counts;
+  return fresh;
+}
+/* backfill the taker windows + whale feed from a normalized recent-trades
+   list [{t,buy,p,q}] (any order) — used by the polling providers, whose
+   candle APIs carry no taker-buy split */
+function backfillFromTrades(list){
+  if(!list || !list.length){ S.backfillState="fail"; if(!S.dataStartMs) S.dataStartMs=S.liveSinceMs||Date.now(); return; }
+  list.sort(function(a,b){ return a.t-b.t; });
+  var items=[];
+  list.forEach(function(tr){
+    bucketAdd(tr.t, tr.buy, tr.p*tr.q, tr.q);
+    S.priceSamples.push({t:tr.t, p:tr.p});
+    var tier=tierOf(tr.p*tr.q);
+    if(tier) items.push({t:tr.t, buy:tr.buy, price:tr.p, qty:tr.q, usd:tr.p*tr.q, tier:tier});
+  });
+  S.priceSamples.sort(function(a,b){ return a.t-b.t; });
+  S.dataStartMs = list[0].t;
+  S.feedOldestMs = list[0].t;
+  S.backfillState = "ok";
+  items.sort(function(a,b){ return b.t-a.t; });
+  S.feed = items.concat(S.feed).slice(0,120);
+  renderFeed();
+}
+function applyTicker24(last, open, high, low, quoteVol, baseVol){
+  if(last) notePrice(Date.now(), last);
+  if(open>0) S.open24=open;
+  if(high>0) S.high24=high;
+  if(low>0) S.low24=low;
+  if(quoteVol>0) S.vol24=quoteVol;
+  if(baseVol>0) S.volBase24=baseVol;
+  if(S.open24>0 && S.price>0) S.chg24=(S.price-S.open24)/S.open24;
+  computeTiers();
+}
+
+/* ---------------- Gate.io (China-direct, WebSocket) ---------------- */
+function gatePair(){ return S.base+"_USDT"; }
+function gateConnect(gen){
+  S.source="gate"; S.srcShort="Gate.io";
+  setConn("connecting","连接中 · Gate.io");
+  S.connectStartedAt=Date.now();
+  var ws;
+  try{ ws = new WebSocket("wss://api.gateio.ws/ws/v4/"); }catch(e){ failoverNext(); return; }
+  S.ws = ws;
+  function sub(channel){
+    try{ ws.send(JSON.stringify({time:Math.floor(Date.now()/1000), channel:channel, event:"subscribe", payload:[gatePair()]})); }catch(e){}
+  }
+  ws.onopen = function(){ sub("spot.trades"); sub("spot.tickers"); };
+  ws.onmessage = function(ev){
+    if(gen!==S.gen) return;
+    var msg; try{ msg=JSON.parse(ev.data); }catch(e){ return; }
+    if(msg.event!=="update" || !msg.result) return;
+    markLive("Gate.io");
+    if(msg.channel==="spot.trades"){
+      var tr = msg.result;
+      var t = parseInt(tr.create_time_ms,10) || Date.now();
+      intakeTrade(t, tr.side==="buy", parseFloat(tr.price), parseFloat(tr.amount));
+      notePrice(t, parseFloat(tr.price));
+    } else if(msg.channel==="spot.tickers"){
+      var d = msg.result;
+      applyTicker24(parseFloat(d.last), 0, parseFloat(d.high_24h), parseFloat(d.low_24h), parseFloat(d.quote_volume), parseFloat(d.base_volume));
+      var cp = parseFloat(d.change_percentage);
+      if(isFinite(cp)) S.chg24 = cp/100;
+    }
+  };
+  ws.onclose = function(){ if(gen===S.gen){ if(!S.failSince) S.failSince=Date.now(); if(Date.now()-S.failSince>6000) failoverNext(); else gateReconnect(gen); } };
+  ws.onerror = function(){ try{ ws.close(); }catch(e){} };
+  everyPoll(function(){ try{ if(ws.readyState===1) ws.send(JSON.stringify({time:Math.floor(Date.now()/1000), channel:"spot.ping"})); }catch(e){} }, 20000);
+  /* order book + ticker safety net via REST polling */
+  function pollBook(){
+    if(gen!==S.gen || S.source!=="gate") return;
+    fetchTimeout("https://api.gateio.ws/api/v4/spot/order_book?currency_pair="+gatePair()+"&limit=100", 5000).then(function(j){
+      if(gen!==S.gen || !j) return;
+      setBookFromArrays(j.bids||[], j.asks||[]);
+      markLive("Gate.io");
+    }).catch(function(){});
+  }
+  function pollTicker(){
+    if(gen!==S.gen || S.source!=="gate") return;
+    fetchTimeout("https://api.gateio.ws/api/v4/spot/tickers?currency_pair="+gatePair(), 5000).then(function(j){
+      if(gen!==S.gen || !j || !j[0]) return;
+      var d=j[0];
+      applyTicker24(parseFloat(d.last), 0, parseFloat(d.high_24h), parseFloat(d.low_24h), parseFloat(d.quote_volume), parseFloat(d.base_volume));
+      var cp=parseFloat(d.change_percentage); if(isFinite(cp)) S.chg24=cp/100;
+    }).catch(function(){});
+  }
+  pollBook(); pollTicker();
+  everyPoll(pollBook, 3000);
+  everyPoll(pollTicker, 8000);
+  /* backfill from recent trades */
+  S.backfillState="pending"; S.dataStartMs=0;
+  fetchTimeout("https://api.gateio.ws/api/v4/spot/trades?currency_pair="+gatePair()+"&limit=1000", 6000).then(function(rows){
+    if(gen!==S.gen || !rows) return;
+    backfillFromTrades(rows.map(function(r){
+      return {t:parseInt(r.create_time_ms,10), buy:r.side==="buy", p:parseFloat(r.price), q:parseFloat(r.amount)};
+    }).filter(function(x){ return x.t>0 && x.p>0 && x.q>0; }));
+  }).catch(function(){ S.backfillState="fail"; if(!S.dataStartMs) S.dataStartMs=S.liveSinceMs||Date.now(); });
+}
+function gateReconnect(gen){
+  setConn("reconnecting","重连中 · Gate.io");
+  clearTimeout(S.reconnectTimer);
+  S.reconnectTimer=setTimeout(function(){
+    if(gen!==S.gen) return;
+    closeSockets();
+    gateConnect(gen);
+  }, 1500);
+}
+
+/* ---------------- MEXC (China-direct, Binance-shaped REST, polled) ---------------- */
+function mexcKey(r){ return r.T+"|"+r.p+"|"+r.q+"|"+(r.m?1:0); }
+function mexcConnect(gen){
+  S.source="mexc"; S.srcShort="MEXC";
+  setConn("connecting","连接中 · MEXC");
+  S.connectStartedAt=Date.now();
+  var base="https://api.mexc.com/api/v3";
+  var firstTrades=true;
+  function pollTrades(){
+    if(gen!==S.gen || S.source!=="mexc") return;
+    fetchTimeout(base+"/aggTrades?symbol="+S.symbol+"&limit="+(firstTrades?1000:200), 6000).then(function(rows){
+      if(gen!==S.gen || !rows || !rows.length) return;
+      markLive("MEXC");
+      rows.sort(function(a,b){ return a.T-b.T; });
+      if(firstTrades){
+        firstTrades=false;
+        freshRows(rows, mexcKey);   /* seed the fingerprint multiset */
+        backfillFromTrades(rows.map(function(r){ return {t:r.T, buy:!r.m, p:parseFloat(r.p), q:parseFloat(r.q)}; }));
+      } else {
+        freshRows(rows, mexcKey).forEach(function(r){
+          intakeTrade(r.T, !r.m, parseFloat(r.p), parseFloat(r.q));
+          notePrice(r.T, parseFloat(r.p));
+        });
+      }
+    }).catch(function(){});
+  }
+  function pollBook(){
+    if(gen!==S.gen || S.source!=="mexc") return;
+    fetchTimeout(base+"/depth?symbol="+S.symbol+"&limit=1000", 6000).then(function(j){
+      if(gen!==S.gen || !j) return;
+      setBookFromArrays(j.bids||[], j.asks||[]);
+      markLive("MEXC");
+    }).catch(function(){});
+  }
+  function pollTicker(){
+    if(gen!==S.gen || S.source!=="mexc") return;
+    fetchTimeout(base+"/ticker/24hr?symbol="+S.symbol, 6000).then(function(j){
+      if(gen!==S.gen || !j) return;
+      applyTicker24(parseFloat(j.lastPrice), parseFloat(j.openPrice), parseFloat(j.highPrice), parseFloat(j.lowPrice), parseFloat(j.quoteVolume), parseFloat(j.volume));
+      var pc=parseFloat(j.priceChangePercent); if(isFinite(pc)) S.chg24=pc;   /* MEXC returns a ratio (0.02), not a percent */
+    }).catch(function(){});
+  }
+  pollTrades(); pollBook(); pollTicker();
+  everyPoll(pollTrades, 1800);
+  everyPoll(pollBook, 3000);
+  everyPoll(pollTicker, 8000);
+}
+
+/* ---------------- Bitget (China-direct, REST, polled) ---------------- */
+function bitgetConnect(gen){
+  S.source="bitget"; S.srcShort="Bitget";
+  setConn("connecting","连接中 · Bitget");
+  S.connectStartedAt=Date.now();
+  var base="https://api.bitget.com/api/v2/spot/market";
+  var firstFills=true;
+  function pollFills(){
+    if(gen!==S.gen || S.source!=="bitget") return;
+    fetchTimeout(base+"/fills?symbol="+S.symbol+"&limit=100", 6000).then(function(j){
+      if(gen!==S.gen || !j || !j.data || !j.data.length) return;
+      markLive("Bitget");
+      var rows=j.data.slice().sort(function(a,b){ return parseInt(a.ts,10)-parseInt(b.ts,10); });
+      if(firstFills){
+        firstFills=false;
+        rows.forEach(function(r){ seenTrade("b"+r.tradeId); });
+        backfillFromTrades(rows.map(function(r){ return {t:parseInt(r.ts,10), buy:r.side==="buy", p:parseFloat(r.price), q:parseFloat(r.size)}; }));
+      } else {
+        rows.forEach(function(r){
+          if(seenTrade("b"+r.tradeId)) return;
+          var t=parseInt(r.ts,10);
+          intakeTrade(t, r.side==="buy", parseFloat(r.price), parseFloat(r.size));
+          notePrice(t, parseFloat(r.price));
+        });
+      }
+    }).catch(function(){});
+  }
+  function pollBook(){
+    if(gen!==S.gen || S.source!=="bitget") return;
+    fetchTimeout(base+"/orderbook?symbol="+S.symbol+"&limit=100", 6000).then(function(j){
+      if(gen!==S.gen || !j || !j.data) return;
+      setBookFromArrays(j.data.bids||[], j.data.asks||[]);
+      markLive("Bitget");
+    }).catch(function(){});
+  }
+  function pollTicker(){
+    if(gen!==S.gen || S.source!=="bitget") return;
+    fetchTimeout(base+"/tickers?symbol="+S.symbol, 6000).then(function(j){
+      if(gen!==S.gen || !j || !j.data || !j.data[0]) return;
+      var d=j.data[0];
+      applyTicker24(parseFloat(d.lastPr), parseFloat(d.open), parseFloat(d.high24h), parseFloat(d.low24h), parseFloat(d.quoteVolume), parseFloat(d.baseVolume));
+    }).catch(function(){});
+  }
+  pollFills(); pollBook(); pollTicker();
+  everyPoll(pollFills, 1800);
+  everyPoll(pollBook, 3000);
+  everyPoll(pollTicker, 8000);
+}
+
+/* ---------------- source / symbol switching ---------------- */
+function closeSockets(){
+  [S.ws, S.wsOkx].forEach(function(w){ if(w){ try{ w.onclose=null; w.onerror=null; w.close(); }catch(e){} } });
+  S.ws=null; S.wsOkx=null;
+  clearInterval(S.okxPingTimer); clearInterval(S.okxBookTimer); clearInterval(S.probeTimer);
+  clearTimeout(S.reconnectTimer);
+  S.pollTimers.forEach(function(id){ clearInterval(id); });
+  S.pollTimers=[];
+}
+function switchSymbol(base, symbol){
+  S.gen++;
+  closeSockets();
+  S.base=base; S.symbol=symbol;
+  S.price=0; S.prevPrice=0; S.open24=0; S.high24=0; S.low24=0; S.vol24=0; S.volBase24=0; S.chg24=0;
+  S.priceSamples=[]; S.buckets={}; S.tradeTimes=[];
+  S.book.bids.clear(); S.book.asks.clear(); S.book.synced=false; S.book.buffer=[];
+  S.okxBook={bids:[],asks:[]};
+  S.feed=[]; S.feedOldestMs=0; S.score=0; S.scoreSmooth=0; S.front=0.5;
+  S.surgeSide=0; S.surgeSince=0; S.lastTradeAt=0; S.suppressSec=0; S.suppressSide=0;
+  S.dataStartMs=0; S.backfillState="pending"; S.liveSinceMs=Date.now();
+  S.failSince=0; S.backoff=1000; S.lastMsgAt=0;
+  S.seenIds={}; S.seenIdQueue=[]; S.lastPollKeys=null;
+  battleEvents.length=0;
+  $("symName").textContent = base+" / USDT";
+  $("feedNote").textContent = T("正在载入历史大单…","Loading large-trade history…");
+  computeTiers(); renderFeed(); renderTabs(); updateFavBtn();
+  pushRecent(base, symbol);
+  startChain();
+}
+
+/* ---------------- watchdog: 2s tick, 9s no-data fail, 20s stall = offline ---------------- */
+setInterval(function(){
+  var now=Date.now();
+  if(S.connState==="live" && S.lastMsgAt && now-S.lastMsgAt>9000){
+    if(!S.failSince) S.failSince=now;
+    setConn("reconnecting","重连中");
+    failoverNext();
+  }
+  if(S.failSince && now-S.failSince>30000 && S.connState!=="live"){
+    setConn("offline","已离线 · 仍在自动换源重试");
+  }
+  if(S.connState==="connecting" && now-S.connectStartedAt>12000 && !S.lastMsgAt){
+    failoverNext();
+  }
+}, 2000);
+
+/* ================================================================
+   BATTLE POWER
+   ================================================================ */
+function computePower(){
+  var rangeFrac = (S.high24>0 && S.price>0) ? (S.high24-S.low24)/S.price : 0.02;
+  var scale = clamp(rangeFrac/40, 0.0004, 0.012);
+  var p10 = Math.tanh(priceChangeOver(10)/scale);
+  var p60 = Math.tanh(priceChangeOver(60)/scale);
+  var w10 = windowSums(10), w60 = windowSums(60);
+  var t10 = (w10.buyUsd+w10.sellUsd)>0 ? (w10.buyUsd-w10.sellUsd)/(w10.buyUsd+w10.sellUsd) : 0;
+  var t60 = (w60.buyUsd+w60.sellUsd)>0 ? (w60.buyUsd-w60.sellUsd)/(w60.buyUsd+w60.sellUsd) : 0;
+  var bk = bookSideSums();
+  var book = (bk.bid05+bk.ask05)>0 ? (bk.bid05-bk.ask05)/(bk.bid05+bk.ask05) : 0;
+  var score = 0.25*p10 + 0.25*p60 + 0.15*t10 + 0.15*t60 + 0.20*book;
+  S.score = clamp(score,-1,1);
+  S.scoreSmooth += (S.score - S.scoreSmooth)*0.10;
+  S.front = 0.5 + Math.tanh(S.scoreSmooth*1.6)*0.5;
+  /* surge: backed by BOTH momentum and real trading flow. The moment
+     trades stop or momentum fades, surge + suppression end — the badge
+     can never hang on an empty market. (renderStats ticks every 250ms) */
+  var s = S.scoreSmooth, now = Date.now();
+  var w10v = windowSums(10);
+  var vol10 = w10v.buyUsd + w10v.sellUsd;
+  var trading = (now - S.lastTradeAt < 3500) && tradesPerSec() >= 0.2 && vol10 > 0;
+  if(S.surgeSide===0){
+    if(trading && s>0.30){ S.surgeSide=1; S.surgeSince=now; }
+    else if(trading && s<-0.30){ S.surgeSide=-1; S.surgeSince=now; }
+  } else {
+    var faded = (S.surgeSide===1 && s<0.20) || (S.surgeSide===-1 && s>-0.20);
+    if(faded || !trading){ S.surgeSide=0; S.surgeSince=0; }
+  }
+  /* suppression seconds accumulate ONLY during a real, deep, live surge */
+  var deep = (S.surgeSide===1 && S.front>0.60) || (S.surgeSide===-1 && S.front<0.40);
+  if(S.surgeSide!==0 && deep && trading){
+    if(S.suppressSide!==S.surgeSide){ S.suppressSide=S.surgeSide; S.suppressSec=0; }
+    S.suppressSec += 0.25;
+    if(S.suppressSec>=20){
+      showVictory(S.surgeSide);
+      S.suppressSec = 0; /* the next victory must be re-earned */
+    }
+  } else {
+    if(!deep && S.suppressSec>0) S.suppressSec = Math.max(0, S.suppressSec-0.5);
+    if(S.surgeSide===0) S.suppressSide=0;
+  }
+  return {p10:p10,p60:p60,t10:t10,t60:t60,book:book,bk:bk};
+}
+
+/* ---------------- war state: ONE source of truth ----------------
+   The power-card badge, the battlefield BPM chip and the music engine all
+   read this, so what the user sees is always what the music is doing. */
+function warState(){
+  if(S.surgeSide===1)  return {side:1,  kind:"surge", cls:"b", label:T("蓝军总攻","Blue Assault")};
+  if(S.surgeSide===-1) return {side:-1, kind:"surge", cls:"r", label:T("红军总攻","Red Assault")};
+  if(S.suppressSide!==0 && S.suppressSec>=3)
+    return {side:S.suppressSide, kind:"press", cls:S.suppressSide===1?"b":"r",
+            label:S.suppressSide===1? T("蓝军压制","Blue Suppression") : T("红军压制","Red Suppression")};
+  if(S.scoreSmooth>0.06)  return {side:1,  kind:"push", cls:"b", label:T("蓝军上压","Blue Pressing")};
+  if(S.scoreSmooth<-0.06) return {side:-1, kind:"push", cls:"r", label:T("红军下压","Red Pressing")};
+  return {side:0, kind:"calm", cls:"", label:T("势均力敌","Stalemate")};
+}
+/* tempo follows the SIGNED momentum: blue pressing speeds the drums up and
+   lifts the key, red pressing drags the tempo down into the dark progression */
+function targetBpm(){
+  var st = warState();
+  var bpm = 96 + S.scoreSmooth*38 + clamp(tradesPerSec()*1.2, 0, 10);
+  if(st.kind==="surge" && st.side===1)  bpm = Math.max(bpm, 126);
+  if(st.kind==="surge" && st.side===-1) bpm = Math.min(bpm, 84);   /* heavy and slow, not frantic */
+  if(!liveData()) bpm = Math.min(bpm, 80);
+  return clamp(Math.round(bpm), 64, 138);
+}
+function renderBpmChip(){
+  var chip = $("bpmChip"); if(!chip) return;
+  var st = warState();
+  var bpm = music.on? Math.round(music.bpm) : targetBpm();
+  chip.textContent = "♪ "+bpm+" BPM · "+st.label;
+  chip.className = "bpm-chip" + (music.on? "" : " off") + (st.cls? " "+st.cls : "");
+}
+
+/* ================================================================
+   STATS RENDERING
+   ================================================================ */
+var WINDOWS = [ {sec:10,label:"近 10 秒"}, {sec:60,label:"近 1 分钟"}, {sec:300,label:"近 5 分钟"} ];
+function buildWinBlocks(){
+  var labels = [T("近 10 秒","Last 10s"), T("近 1 分钟","Last 1m"), T("近 5 分钟","Last 5m")];
+  $("winBlocks").innerHTML = WINDOWS.map(function(w,i){
+    return '<div class="win-block"><div class="win-head"><span class="wl">'+labels[i]+'</span><span class="cov" id="cov'+i+'"></span></div>'+
+      '<div class="vsbar"><div class="fb" id="fb'+i+'" style="width:50%"></div></div>'+
+      '<div class="win-nums"><span class="b" id="wb'+i+'">—</span><span class="r" id="wr'+i+'">—</span></div></div>';
+  }).join("");
+  $("depthBlocks").innerHTML = [0.5,1].map(function(x,i){
+    return '<div class="depth-block"><div class="depth-head"><span>±'+x+'% '+T("买盘 ","Bids ")+'<b id="db'+i+'" style="color:var(--blue2)">—</b></span>'+
+      '<span>'+T("卖盘 ","Asks ")+'<b id="da'+i+'" style="color:var(--red2)">—</b></span></div>'+
+      '<div class="dbar"><div class="db" id="dbb'+i+'" style="width:50%"></div><div class="da" id="daa'+i+'" style="width:50%"></div></div></div>';
+  }).join("");
+}
+function renderStats(){
+  pruneBuckets();
+  var comp = computePower();
+  /* price */
+  var pn = $("priceNow");
+  pn.textContent = S.price? "$"+fmtPrice(S.price) : "—";
+  pn.className = "price-now " + (S.price>=S.prevPrice ? "up":"dn");
+  var chg = $("chg24");
+  chg.textContent = (S.chg24>=0?"+":"")+(S.chg24*100).toFixed(2)+"%";
+  chg.className = "chg " + (S.chg24>=0?"up":"dn");
+  $("hi24").textContent = S.high24? "$"+fmtPrice(S.high24):"—";
+  $("lo24").textContent = S.low24? "$"+fmtPrice(S.low24):"—";
+  $("vol24").textContent = S.vol24? fmtUSD(S.vol24):"—";
+  $("volBase").textContent = S.volBase24? fmtQty(S.volBase24)+" "+esc(S.base):"—";
+  $("tps").textContent = tradesPerSec().toFixed(1)+T(" 笔/秒"," trades/s");
+  /* power */
+  var bluePct = Math.round((S.scoreSmooth+1)/2*100);
+  $("pctBlue").textContent = bluePct+"%";
+  $("pctRed").textContent = (100-bluePct)+"%";
+  $("fillBlue").style.width = (S.front*100)+"%";
+  $("frontMark").style.left = "calc("+(S.front*100)+"% - 1px)";
+  var bar=$("powerBar");
+  bar.className = "powerbar" + (S.surgeSide===1?" surging-b": S.surgeSide===-1?" surging-r":"");
+  var st = warState();
+  var sb = $("stateBadge");
+  sb.className = "state-badge" + (st.cls? " "+st.cls : "");
+  sb.innerHTML = '<span class="dotp"></span>'+esc(st.label);
+  function cs(v){ return '<span class="'+(v>=0?"pos":"neg")+'">'+(v>=0?"+":"")+v.toFixed(2)+"</span>"; }
+  $("compLine").innerHTML =
+    "<span>"+T("价格10秒 ","Price 10s ")+cs(comp.p10)+"</span><span>"+T("价格1分钟 ","Price 1m ")+cs(comp.p60)+"</span>"+
+    "<span>"+T("吃单10秒 ","Taker 10s ")+cs(comp.t10)+"</span><span>"+T("吃单1分钟 ","Taker 1m ")+cs(comp.t60)+"</span>"+
+    "<span>"+T("挂单±0.5% ","Book ±0.5% ")+cs(comp.book)+"</span><span>"+T("合成 ","Score ")+cs(S.score)+"</span>";
+  /* evidence line + real suppression timer */
+  function pc(v){ return '<span class="'+(v>=0?"pos":"neg")+'">'+(v>=0?"+":"")+(v*100).toFixed(3)+"%</span>"; }
+  var w10s = windowSums(10), tot10 = w10s.buyUsd+w10s.sellUsd;
+  var buyPct = tot10>0? Math.round(w10s.buyUsd/tot10*100):50;
+  var bkTot = comp.bk.bid05+comp.bk.ask05;
+  var bbPct = bkTot>0? Math.round(comp.bk.bid05/bkTot*100):50;
+  $("basisLine").innerHTML = T("战况依据：","Basis: ")+T("10秒 ","10s ")+pc(priceChangeOver(10))+" · "+T("1分钟 ","1m ")+pc(priceChangeOver(60))+
+    " · "+T("最新 ","Latest ")+(S.price>=S.prevPrice? '<span class="pos">↑</span>':'<span class="neg">↓</span>')+
+    " · "+T("吃单买:卖 ","Taker buy:sell ")+"<span class='pos'>"+buyPct+"</span>:<span class='neg'>"+(100-buyPct)+"</span>"+
+    " · "+T("挂单买:卖 ","Book buy:sell ")+"<span class='pos'>"+bbPct+"</span>:<span class='neg'>"+(100-bbPct)+"</span>";
+  $("suppressLine").textContent = (S.suppressSide!==0 && S.suppressSec>=3)
+    ? (S.suppressSide===1? T("蓝军","Blue") : T("红军","Red"))+T("已压制 "," suppressing for ")+Math.floor(S.suppressSec)+T(" 秒","s") : "";
+  /* taker windows */
+  WINDOWS.forEach(function(w,i){
+    var s = windowSums(w.sec);
+    var tot = s.buyUsd+s.sellUsd;
+    $("fb"+i).style.width = (tot>0? (s.buyUsd/tot*100):50)+"%";
+    $("wb"+i).innerHTML = fmtUSD(s.buyUsd)+"<small>"+T("买 ","Buy ")+fmtQty(s.buyQty)+" "+esc(S.base)+"</small>";
+    $("wr"+i).innerHTML = fmtUSD(s.sellUsd)+"<small>"+T("卖 ","Sell ")+fmtQty(s.sellQty)+" "+esc(S.base)+"</small>";
+    var cov = Math.floor(coveredSeconds(w.sec));
+    var covEl = $("cov"+i);
+    if(cov < w.sec){ covEl.textContent = T("仅 ","only ")+cov+T(" 秒","s"); covEl.className="cov"; }
+    else { covEl.textContent = T("已满 ","full ")+w.sec+T(" 秒","s"); covEl.className="cov ok"; }
+  });
+  /* backfill note */
+  var bn = $("backfillNote");
+  if(S.backfillState==="pending"){ bn.textContent=T("回填中… 正在用 1 秒 K 线补齐 10 秒 / 1 分钟 / 5 分钟窗口","Backfilling… filling the 10s / 1m / 5m windows from 1s klines"); bn.className="backfill-note"; }
+  else if(S.backfillState==="fail"){
+    bn.textContent=T("回填失败 · 仅统计 ","Backfill failed · only ")+Math.floor(coveredSeconds(300))+T(" 秒（实时累计中）","s so far (counting live)"); bn.className="backfill-note";
+  } else { bn.textContent=T("窗口已由历史 K 线回填，其后为实时累计","Windows backfilled from klines, live after that"); bn.className="backfill-note ok"; }
+  /* book */
+  var bk = comp.bk;
+  $("bestBid").textContent = bk.bestBid? fmtPrice(bk.bestBid):"—";
+  $("bestAsk").textContent = bk.bestAsk? fmtPrice(bk.bestAsk):"—";
+  $("spread").textContent = (bk.bestBid&&bk.bestAsk)? fmtPrice(bk.bestAsk-bk.bestBid)+"（"+((bk.bestAsk-bk.bestBid)/((bk.bestAsk+bk.bestBid)/2)*100).toFixed(3)+"%）":"—";
+  var pairs=[[bk.bid05,bk.ask05],[bk.bid1,bk.ask1]];
+  pairs.forEach(function(pr,i){
+    $("db"+i).textContent=fmtUSD(pr[0]); $("da"+i).textContent=fmtUSD(pr[1]);
+    var mx=Math.max(pr[0],pr[1],1);
+    $("dbb"+i).style.width=(pr[0]/mx*100)+"%";
+    $("daa"+i).style.width=(pr[1]/mx*100)+"%";
+  });
+  renderBpmChip();
+  updateQuickCards();
+  drawFlowChart();
+  drawDepthChart(bk);
+}
+
+/* ---------------- mini charts (plain canvas, original) ---------------- */
+function drawFlowChart(){
+  var cv=$("flowChart"), ctx=cv.getContext("2d");
+  var W=cv.width, H=cv.height, mid=H/2;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle="#1e2a42"; ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
+  var nowSec=Math.floor(Date.now()/1000), max=1;
+  var vals=[];
+  for(var i=119;i>=0;i--){
+    var b=S.buckets[nowSec-i];
+    var net=b? (b.buyUsd-b.sellUsd):0;
+    vals.push(net); if(Math.abs(net)>max) max=Math.abs(net);
+  }
+  var bw=W/120;
+  vals.forEach(function(v,i){
+    var h=Math.abs(v)/max*(mid-4);
+    ctx.fillStyle = v>=0? "#3d9bff":"#ff5470";
+    if(v>=0) ctx.fillRect(i*bw, mid-h, Math.max(1,bw-1), h);
+    else ctx.fillRect(i*bw, mid, Math.max(1,bw-1), h);
+  });
+}
+function drawDepthChart(bk){
+  var cv=$("depthChart"), ctx=cv.getContext("2d");
+  var W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!S.price) return;
+  var mid=S.price;
+  function curve(points, isBid){
+    var pts=points.slice().sort(function(a,b){return isBid? b[0]-a[0] : a[0]-b[0];});
+    var cum=0, arr=[];
+    pts.forEach(function(p){ cum+=p[1]; arr.push([p[0],cum]); });
+    return arr;
+  }
+  var bids=curve(bk.bidCurve,true), asks=curve(bk.askCurve,false);
+  var maxV=1;
+  bids.forEach(function(p){ if(p[1]>maxV) maxV=p[1]; });
+  asks.forEach(function(p){ if(p[1]>maxV) maxV=p[1]; });
+  function X(p){ return (p/mid-0.98)/0.04*W; }
+  function Y(v){ return H-4-(v/maxV)*(H-12); }
+  ctx.beginPath(); ctx.moveTo(0,H-4);
+  bids.forEach(function(p){ ctx.lineTo(X(p[0]),Y(p[1])); });
+  ctx.lineTo(X(mid),H-4); ctx.closePath();
+  ctx.fillStyle="rgba(61,155,255,.35)"; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(X(mid),H-4);
+  asks.forEach(function(p){ ctx.lineTo(X(p[0]),Y(p[1])); });
+  ctx.lineTo(W,H-4); ctx.closePath();
+  ctx.fillStyle="rgba(255,84,112,.35)"; ctx.fill();
+  ctx.strokeStyle="#5f7292"; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(W/2,2); ctx.lineTo(W/2,H-2); ctx.stroke(); ctx.setLineDash([]);
+}
+
+/* ================================================================
+   BANNERS
+   ================================================================ */
+var bannerTimer=null;
+function showBanner(html, cls, ms){
+  var b=$("banner");
+  b.innerHTML=html; b.className="banner show "+cls;
+  clearTimeout(bannerTimer);
+  bannerTimer=setTimeout(function(){ b.className="banner "+cls; }, ms||3200);
+}
+function showWhaleBanner(buy, usd){
+  showBanner("巨鲸"+(buy?"买入":"卖出")+"<span class='amt'>"+fmtUSD(usd)+" · "+esc(S.base)+"</span>", "whale", 3400);
+}
+function showVictory(side){
+  showBanner(side===1? "多军大捷 · 总攻得手":"空军大捷 · 总攻得手", side===1?"win-b":"win-r", 4200);
+}
+
+/* ================================================================
+   BATTLE CANVAS ENGINE
+   ================================================================ */
+var cv=$("battle"), ctx=cv.getContext("2d");
+var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var units=[], shells=[], parts=[], meteors=[], smokes=[], dusts=[], flashes=[];
+var dmgBlue=0, dmgRed=0;                 // damage taken by each fortress
+var spawnAcc={b:0,r:0};
+var fpsEMA=60, particleFactor=1, lastFrameT=performance.now();
+var stars=[];
+for(var si=0; si<70; si++) stars.push({x:Math.random(), y:Math.random()*0.55, r:Math.random()*1.3+0.3, tw:Math.random()*6.28});
+var frontDyn={x:0.5, v:0};               // front line with spring inertia + overshoot
+var shakeMag=0;
+var waveMark={b:0,r:0};
+var lastShoutAt=0;
+var flowHist=[], lastFlowSec=0, patrolState=null;
+
+function liveData(){ return S.connState==="live" && S.lastMsgAt && (Date.now()-S.lastMsgAt<6000); }
+function addShake(m){ if(!reducedMotion) shakeMag=Math.min(11, shakeMag+m); }
+function sideCol(side){ return side==="b"? "#3d9bff":"#ff5470"; }
+function sideLite(side){ return side==="b"? "#9fd0ff":"#ffb3c1"; }
+function sideDark(side){ return side==="b"? "#173f6e":"#6e1a2c"; }
+
+function fortGeom(W,H,side){
+  var groundY=H*0.86, fw=W*0.115, fh=H*0.52;
+  var x = side==="b" ? W*0.035 : W-W*0.035-fw;
+  return {x:x, y:groundY-fh, w:fw, h:fh, groundY:groundY,
+          cannonX: side==="b"? x+fw*0.92 : x+fw*0.08,
+          cannonY: groundY-fh*0.72, cx:x+fw/2};
+}
+function drawFort(W,H,side,dmg,t){
+  /* Ancient Chinese fortress, clean stylised silhouette: stone terrace,
+     battered stone wall with courses, crenellations, a watchtower with an
+     upturned-eave tiled roof and gold ridge, plaque, gate, hanging banners. */
+  var g=fortGeom(W,H,side);
+  var w=g.w, x0=g.x, top=g.y, ground=g.groundY, h=g.h, cx=g.cx;
+  var dirIn = side==="b"? 1:-1;                    /* toward the field centre */
+  var main = side==="b"? "#3d9bff":"#ff5470";
+  var dark = side==="b"? "#173f6e":"#6e1a2c";
+  var lite = side==="b"? "#7cc2ff":"#ff8fa3";
+
+  /* --- stone terrace --- */
+  ctx.fillStyle="#1c2942";
+  ctx.beginPath();
+  ctx.moveTo(x0-w*0.06, ground); ctx.lineTo(x0+w*1.06, ground);
+  ctx.lineTo(x0+w*0.97, ground-h*0.10); ctx.lineTo(x0+w*0.03, ground-h*0.10);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle="rgba(170,195,230,.22)";
+  ctx.fillRect(x0+w*0.03, ground-h*0.10, w*0.94, 2);
+
+  /* --- main wall body (slight batter) with stone courses --- */
+  var yb=ground-h*0.10, yt=top+h*0.30;
+  var bx0=x0+w*0.05, bx1=x0+w*0.95, tx0=x0+w*0.09, tx1=x0+w*0.91;
+  var wg=ctx.createLinearGradient(0,yt,0,yb);
+  wg.addColorStop(0,"#576b90"); wg.addColorStop(0.5,"#3d4f6f"); wg.addColorStop(1,"#28374f");
+  ctx.fillStyle=wg;
+  ctx.beginPath();
+  ctx.moveTo(tx0,yt); ctx.lineTo(tx1,yt); ctx.lineTo(bx1,yb); ctx.lineTo(bx0,yb);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle="rgba(8,12,22,.32)"; ctx.lineWidth=1;
+  for(var rI=1;rI<=3;rI++){
+    var tt=rI/4, yy=yt+(yb-yt)*tt;
+    ctx.beginPath(); ctx.moveTo(tx0+(bx0-tx0)*tt, yy); ctx.lineTo(tx1+(bx1-tx1)*tt, yy); ctx.stroke();
+  }
+  /* army-tinted rim light on the field-facing edge */
+  var rg=ctx.createLinearGradient(dirIn>0? tx1:tx0, 0, dirIn>0? tx0:tx1, 0);
+  rg.addColorStop(0, side==="b"? "rgba(61,155,255,.22)":"rgba(255,84,112,.22)");
+  rg.addColorStop(0.4,"rgba(0,0,0,0)");
+  ctx.fillStyle=rg;
+  ctx.beginPath();
+  ctx.moveTo(tx0,yt); ctx.lineTo(tx1,yt); ctx.lineTo(bx1,yb); ctx.lineTo(bx0,yb);
+  ctx.closePath(); ctx.fill();
+
+  /* --- cap slab + crenellations --- */
+  ctx.fillStyle="#65799c";
+  ctx.fillRect(tx0-w*0.015, yt-h*0.035, (tx1-tx0)+w*0.03, h*0.035);
+  ctx.fillStyle="#4d6184";
+  var mw=w*0.085, gap=w*0.075;
+  for(var mi=0; tx0+w*0.01+mi*(mw+gap)+mw<=tx1; mi++){
+    ctx.fillRect(tx0+w*0.01+mi*(mw+gap), yt-h*0.088, mw, h*0.053);
+  }
+
+  /* --- watchtower --- */
+  var tw=w*0.46, txw=cx-tw/2, twTop=top+h*0.115, twBot=yt+h*0.012;
+  var tg2=ctx.createLinearGradient(0,twTop,0,twBot);
+  tg2.addColorStop(0,"#65799c"); tg2.addColorStop(1,"#3d4f6f");
+  ctx.fillStyle=tg2; ctx.fillRect(txw, twTop, tw, twBot-twTop);
+  ctx.fillStyle="#4d6184";
+  for(var ti=0; ti<3; ti++) ctx.fillRect(txw+ti*(tw*0.36), twTop-h*0.045, tw*0.24, h*0.045);
+  ctx.fillStyle="rgba(255,196,90,.92)";                       /* lit tower window */
+  ctx.fillRect(cx-w*0.026, twTop+h*0.055, w*0.05, h*0.075);
+
+  /* --- roof: two sloped tile planes, upturned eave flicks, gold ridge --- */
+  var ridgeY=top-h*0.005, eaveY=twTop+h*0.008, eave=w*0.37;
+  ctx.fillStyle="#16233c";
+  ctx.beginPath();                                            /* left plane */
+  ctx.moveTo(cx, ridgeY); ctx.lineTo(cx-eave, eaveY);
+  ctx.lineTo(cx-eave*0.84, eaveY+h*0.048); ctx.lineTo(cx, ridgeY+h*0.048);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();                                            /* right plane */
+  ctx.moveTo(cx, ridgeY); ctx.lineTo(cx+eave, eaveY);
+  ctx.lineTo(cx+eave*0.84, eaveY+h*0.048); ctx.lineTo(cx, ridgeY+h*0.048);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle="#16233c"; ctx.lineWidth=Math.max(2.4, w*0.028); ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(cx-eave, eaveY); ctx.lineTo(cx-eave-w*0.05, eaveY-h*0.032); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+eave, eaveY); ctx.lineTo(cx+eave+w*0.05, eaveY-h*0.032); ctx.stroke();
+  ctx.strokeStyle="#d9a441"; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(cx-eave*0.96, eaveY-h*0.004); ctx.lineTo(cx, ridgeY-h*0.006); ctx.lineTo(cx+eave*0.96, eaveY-h*0.004); ctx.stroke();
+  ctx.lineCap="butt";
+
+  /* --- flag on the roof pole --- */
+  var fy0=ridgeY-h*0.155;
+  ctx.strokeStyle="#9db0c9"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(cx, ridgeY+h*0.02); ctx.lineTo(cx, fy0); ctx.stroke();
+  ctx.fillStyle="#ffd27c"; ctx.beginPath(); ctx.arc(cx, fy0-2, 2.4, 0, 6.29); ctx.fill();
+  var wav = reducedMotion? 0 : Math.sin(t/300+(side==="b"?0:2))*2;
+  ctx.fillStyle=main;
+  ctx.beginPath(); ctx.moveTo(cx, fy0);
+  ctx.lineTo(cx+dirIn*w*0.30, fy0+h*0.055+wav);
+  ctx.lineTo(cx, fy0+h*0.115); ctx.closePath(); ctx.fill();
+  ctx.fillStyle="#fff";
+  ctx.font="700 "+Math.max(9,w*0.13)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(side==="b"?"多":"空", cx+dirIn*w*0.125, fy0+h*0.058+wav*0.5);
+
+  /* --- hanging banners flanking the plaque --- */
+  [0.155, 0.755].forEach(function(fx){
+    ctx.fillStyle=main; ctx.fillRect(x0+w*fx, yt, w*0.085, h*0.20);
+    ctx.fillStyle="#ffd27c"; ctx.fillRect(x0+w*fx, yt+h*0.185, w*0.085, 2.2);
+  });
+  /* --- plaque with the army character --- */
+  ctx.fillStyle=dark;
+  ctx.fillRect(cx-w*0.17, top+h*0.435, w*0.34, h*0.125);
+  ctx.strokeStyle="#d9a441"; ctx.lineWidth=1.6;
+  ctx.strokeRect(cx-w*0.17, top+h*0.435, w*0.34, h*0.125);
+  ctx.fillStyle="#ffd27c";
+  ctx.font="800 "+(h*0.088)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(side==="b"?"多":"空", cx, top+h*0.50);
+  /* wall windows */
+  ctx.fillStyle="rgba(255,196,90,.85)";
+  ctx.fillRect(cx-w*0.315, top+h*0.465, w*0.034, h*0.06);
+  ctx.fillRect(cx+w*0.281, top+h*0.465, w*0.034, h*0.06);
+
+  /* --- arched gate --- */
+  var gw=w*0.30, gx=cx-gw/2, gTop=yb-h*0.315;
+  ctx.fillStyle="#0a0f1c";
+  ctx.beginPath();
+  ctx.moveTo(gx, yb); ctx.lineTo(gx, gTop+h*0.07);
+  ctx.quadraticCurveTo(cx, gTop-h*0.045, gx+gw, gTop+h*0.07);
+  ctx.lineTo(gx+gw, yb); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle="rgba(190,205,230,.16)"; ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(cx, gTop+h*0.02); ctx.lineTo(cx, yb); ctx.stroke();
+  ctx.fillStyle="#d9a441";
+  ctx.beginPath(); ctx.arc(cx-w*0.055, yb-h*0.13, 1.8, 0, 6.29); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx+w*0.055, yb-h*0.13, 1.8, 0, 6.29); ctx.fill();
+
+  /* --- wall cannon (mini-shell source) --- */
+  ctx.save();
+  ctx.translate(g.cannonX, g.cannonY);
+  ctx.fillStyle="#222f49"; ctx.fillRect(-7,-1,14,6);
+  ctx.rotate(dirIn>0? -0.45 : Math.PI+0.45);
+  ctx.fillStyle="#2c3c5c"; ctx.fillRect(0,-3,w*0.32,6);
+  ctx.fillStyle="#d9a441"; ctx.fillRect(w*0.24,-3,3,6);
+  ctx.restore();
+  ctx.fillStyle="#1a2438"; ctx.beginPath(); ctx.arc(g.cannonX, g.cannonY, 5, 0, 6.29); ctx.fill();
+
+  /* --- battle cracks scale with damage --- */
+  if(dmg>18){
+    ctx.strokeStyle="rgba(5,8,15,.8)"; ctx.lineWidth=1.4;
+    var n = dmg>55? 5:3;
+    for(var c=0;c<n;c++){
+      var cxp=tx0+(tx1-tx0)*(0.16+0.17*c), cyp=yt+(yb-yt)*(0.30+0.09*c);
+      ctx.beginPath(); ctx.moveTo(cxp,cyp);
+      ctx.lineTo(cxp+w*0.06, cyp+h*0.13); ctx.lineTo(cxp-w*0.03, cyp+h*0.24); ctx.stroke();
+    }
+  }
+  return g;
+}
+
+/* ---------------- ancient units ----------------
+   inf = spear infantry (small trades) · cav = cavalry (shell tier)
+   gen = general (heavy tier) · cmd = commander with great banner (whale) */
+function spawnUnit(type, side, opts){
+  opts = opts||{};
+  var base = type==="cav"? 0.17+Math.random()*0.05
+           : type==="gen"? 0.105+Math.random()*0.02
+           : type==="cmd"? 0.125
+           : 0.078+Math.random()*0.038;                 /* 3-4x faster than before */
+  units.push({
+    type:type, side:side,
+    x: opts.x!=null? opts.x : (side==="b"? 0.075:0.925),
+    lane: 0.795+Math.random()*0.135,
+    sp: base*(opts.boost||1),
+    ph: Math.random()*6.28,
+    life: opts.life||26,
+    mode: opts.mode||"charge",                            /* charge | patrol */
+    dir: side==="b"? 1:-1,
+    face: side==="b"? 1:-1,
+    boost: opts.boost||1,
+    clashed:false,
+    raid: !!opts.raid                                     /* rides through the front to the enemy fort */
+  });
+  if(units.length>110) units.splice(0, units.length-110);
+}
+function unitTargetX(u){
+  if(u.raid) return u.side==="b"? 0.895:0.105;
+  return frontDyn.x + (u.side==="b"? -0.028:0.028);
+}
+function explode(x,y,big,enemySide){
+  var n = Math.round((big? 46:16)*particleFactor);
+  for(var i=0;i<n;i++){
+    var a=Math.random()*6.283, v=(0.02+Math.random()*0.09)*(big?1.5:1);
+    parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-0.03,life:0.7+Math.random()*0.6,t:0,
+      c: Math.random()<0.4? "#ffd27c" : (enemySide==="r"? "#7cc2ff":"#ff8fa3")});
+  }
+  if(parts.length>420) parts.splice(0, parts.length-420);
+}
+function clashAt(x,y,side,big){
+  flashes.push({x:x,y:y,t:0,life:big?0.30:0.20,r:big?30:17});
+  var n=Math.round((big?20:9)*particleFactor);
+  for(var i=0;i<n;i++){
+    var a=Math.random()*6.283, v=0.015+Math.random()*0.06;
+    parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-0.02,life:0.4+Math.random()*0.4,t:0,
+      c: Math.random()<0.45? "#ffe9b0" : sideCol(side)});
+  }
+  if(parts.length>420) parts.splice(0, parts.length-420);
+  addShake(big? 2.6:0.7);
+}
+
+/* ---- figure drawing (procedural, no images) ---- */
+function drawInfantry(u, x, y, s, t){
+  var dir = u.face||(u.side==="b"? 1:-1);
+  var run = reducedMotion? 0 : Math.sin(t/95 + u.ph*3);
+  var bob = reducedMotion? 0 : Math.abs(Math.sin(t/95 + u.ph*3))*2.2*s;
+  var col=sideCol(u.side), lite=sideLite(u.side), dark=sideDark(u.side);
+  var gen = u.type==="gen";
+  ctx.lineWidth=Math.max(1.4,1.8*s); ctx.lineCap="round";
+  /* legs — running stride */
+  ctx.strokeStyle="#141d2e";
+  ctx.beginPath();
+  ctx.moveTo(x, y-10*s+bob*0.4);
+  ctx.lineTo(x + run*5*s - dir*1*s, y - Math.max(0,run)*2.4*s);
+  ctx.moveTo(x, y-10*s+bob*0.4);
+  ctx.lineTo(x - run*5*s - dir*1*s, y - Math.max(0,-run)*2.4*s);
+  ctx.stroke();
+  /* cape for generals */
+  if(gen){
+    ctx.fillStyle=dark;
+    ctx.beginPath();
+    ctx.moveTo(x-dir*3*s, y-21*s+bob);
+    ctx.quadraticCurveTo(x-dir*11*s, y-14*s+bob+Math.sin(t/200+u.ph)*1.6*s, x-dir*9.5*s, y-4*s);
+    ctx.lineTo(x-dir*2*s, y-6*s); ctx.closePath(); ctx.fill();
+  }
+  /* spear — couched forward, more level the faster the charge */
+  var spY = y-15.5*s+bob, spLen=(gen?24:20)*s, spDrop=(u.boost>1.2? 2.5:5.5)*s;
+  ctx.strokeStyle="#c8b28a"; ctx.lineWidth=Math.max(1.2,1.5*s);
+  ctx.beginPath(); ctx.moveTo(x-dir*4*s, spY+3*s); ctx.lineTo(x+dir*spLen, spY-spDrop+3*s); ctx.stroke();
+  ctx.fillStyle="#dfe8f5";
+  ctx.beginPath();
+  ctx.moveTo(x+dir*(spLen+4.5)*s, spY-spDrop+3*s);
+  ctx.lineTo(x+dir*spLen, spY-spDrop-1.2*s); ctx.lineTo(x+dir*spLen, spY-spDrop+7*s);
+  ctx.closePath(); ctx.fill();
+  /* shield on the front arm */
+  ctx.fillStyle=lite;
+  ctx.beginPath();
+  var shx=x+dir*5.2*s, shy=y-16.5*s+bob;
+  ctx.moveTo(shx, shy); ctx.lineTo(shx+dir*4.6*s, shy+1.2*s); ctx.lineTo(shx+dir*4.2*s, shy+8.6*s);
+  ctx.quadraticCurveTo(shx+dir*2.2*s, shy+10.6*s, shx, shy+8.6*s); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(shx+dir*2.2*s, shy+4.6*s, 1.5*s, 0, 6.29); ctx.fill();
+  /* armoured torso */
+  ctx.fillStyle=col;
+  ctx.beginPath();
+  ctx.moveTo(x-4.4*s, y-10*s+bob*0.4); ctx.lineTo(x-3.6*s, y-19.5*s+bob);
+  ctx.lineTo(x+3.6*s, y-19.5*s+bob); ctx.lineTo(x+4.4*s, y-10*s+bob*0.4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=dark; ctx.fillRect(x-4.4*s, y-12.6*s+bob*0.5, 8.8*s, 1.8*s);       /* belt */
+  ctx.fillStyle="rgba(255,210,110,.9)"; ctx.fillRect(x-0.9*s, y-12.9*s+bob*0.5, 1.8*s, 2.2*s); /* buckle */
+  /* head + helmet + plume */
+  ctx.fillStyle="#e8c39a"; ctx.beginPath(); ctx.arc(x, y-22.6*s+bob, 3.1*s, 0, 6.29); ctx.fill();
+  ctx.fillStyle=dark;
+  ctx.beginPath(); ctx.arc(x, y-23.4*s+bob, 3.5*s, Math.PI, 6.29); ctx.closePath(); ctx.fill();
+  ctx.fillRect(x-3.5*s, y-23.6*s+bob, 7*s, 1.1*s);
+  ctx.strokeStyle= gen? "#ffd27c" : lite; ctx.lineWidth=Math.max(1.2,(gen?2.4:1.7)*s);
+  ctx.beginPath(); ctx.moveTo(x, y-26.6*s+bob);
+  ctx.quadraticCurveTo(x-dir*2.5*s, y-(gen?31:29)*s+bob, x-dir*(gen?6:4.5)*s, y-(gen?29.5:27.5)*s+bob);
+  ctx.stroke();
+  ctx.lineCap="butt";
+}
+function drawHorse(u, x, y, s, t, withBanner){
+  var dir = u.face||(u.side==="b"? 1:-1);
+  var gal = reducedMotion? 0 : Math.sin(t/80 + u.ph*3);
+  var bob = reducedMotion? 0 : Math.abs(Math.sin(t/80 + u.ph*3))*1.8*s;
+  var col=sideCol(u.side), lite=sideLite(u.side), dark=sideDark(u.side);
+  var hide="#4a3a30";
+  ctx.lineCap="round";
+  /* legs — gallop */
+  ctx.strokeStyle=hide; ctx.lineWidth=Math.max(1.5,2*s);
+  var hipY=y-11.5*s+bob*0.5;
+  ctx.beginPath();
+  ctx.moveTo(x+dir*7*s, hipY); ctx.lineTo(x+dir*(7+gal*5)*s, y-Math.max(0,gal)*3*s);
+  ctx.moveTo(x+dir*4.5*s, hipY); ctx.lineTo(x+dir*(4.5-gal*5)*s, y-Math.max(0,-gal)*3*s);
+  ctx.moveTo(x-dir*7*s, hipY); ctx.lineTo(x-dir*(7-gal*5)*s, y-Math.max(0,-gal)*3*s);
+  ctx.moveTo(x-dir*4.5*s, hipY); ctx.lineTo(x-dir*(4.5+gal*5)*s, y-Math.max(0,gal)*3*s);
+  ctx.stroke();
+  /* tail */
+  ctx.strokeStyle="#2c211a"; ctx.lineWidth=Math.max(1.4,1.8*s);
+  ctx.beginPath(); ctx.moveTo(x-dir*11.5*s, y-16*s+bob);
+  ctx.quadraticCurveTo(x-dir*15*s, y-11*s+bob, x-dir*13.5*s, y-5.5*s); ctx.stroke();
+  /* body */
+  ctx.fillStyle=hide;
+  ctx.beginPath(); ctx.ellipse(x, y-14.5*s+bob, 11.5*s, 5.2*s, 0, 0, 6.29); ctx.fill();
+  /* neck + head */
+  ctx.beginPath();
+  ctx.moveTo(x+dir*8*s, y-18.5*s+bob); ctx.lineTo(x+dir*14.5*s, y-22.5*s+bob);
+  ctx.lineTo(x+dir*17.5*s, y-19.5*s+bob); ctx.lineTo(x+dir*12.5*s, y-14.5*s+bob);
+  ctx.closePath(); ctx.fill();
+  ctx.fillRect(x+dir*13.8*s, y-23.4*s+bob, 4.6*s, 2.4*s);
+  /* mane */
+  ctx.strokeStyle="#2c211a"; ctx.lineWidth=Math.max(1.2,1.6*s);
+  ctx.beginPath(); ctx.moveTo(x+dir*8.6*s, y-19.5*s+bob); ctx.lineTo(x+dir*13.8*s, y-23.6*s+bob); ctx.stroke();
+  /* saddle cloth in army colour */
+  ctx.fillStyle=col; ctx.fillRect(x-4.5*s, y-18.6*s+bob, 9*s, 5.4*s);
+  ctx.fillStyle="rgba(255,210,110,.85)"; ctx.fillRect(x-4.5*s, y-13.9*s+bob, 9*s, 1.1*s);
+  /* rider */
+  var ry = y-19*s+bob;
+  ctx.strokeStyle="#141d2e"; ctx.lineWidth=Math.max(1.3,1.7*s);
+  ctx.beginPath(); ctx.moveTo(x-dir*1*s, ry); ctx.lineTo(x-dir*3.4*s, y-12.5*s+bob); ctx.stroke();  /* rider leg */
+  ctx.fillStyle=col;
+  ctx.beginPath();
+  ctx.moveTo(x-3.4*s, ry+1*s); ctx.lineTo(x-2.8*s, ry-8.5*s); ctx.lineTo(x+2.8*s, ry-8.5*s); ctx.lineTo(x+3.4*s, ry+1*s);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle="#e8c39a"; ctx.beginPath(); ctx.arc(x, ry-11.4*s, 2.7*s, 0, 6.29); ctx.fill();
+  ctx.fillStyle=dark; ctx.beginPath(); ctx.arc(x, ry-12.1*s, 3*s, Math.PI, 6.29); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle= withBanner? "#ffd27c":lite; ctx.lineWidth=Math.max(1.1,(withBanner?2.2:1.5)*s);
+  ctx.beginPath(); ctx.moveTo(x, ry-14.8*s);
+  ctx.quadraticCurveTo(x-dir*2*s, ry-17.6*s, x-dir*4.6*s, ry-16.4*s); ctx.stroke();
+  /* couched lance */
+  ctx.strokeStyle="#c8b28a"; ctx.lineWidth=Math.max(1.1,1.4*s);
+  ctx.beginPath(); ctx.moveTo(x-dir*3*s, ry-5.5*s); ctx.lineTo(x+dir*19*s, ry-7.5*s); ctx.stroke();
+  ctx.fillStyle="#dfe8f5";
+  ctx.beginPath(); ctx.moveTo(x+dir*23*s, ry-7.5*s); ctx.lineTo(x+dir*19*s, ry-9*s); ctx.lineTo(x+dir*19*s, ry-6*s); ctx.closePath(); ctx.fill();
+  if(withBanner){
+    /* the great banner (大纛) */
+    var bx = x-dir*6.5*s, topY = ry-46*s;
+    ctx.strokeStyle="#8a6a3a"; ctx.lineWidth=Math.max(1.6,2.2*s);
+    ctx.beginPath(); ctx.moveTo(bx, ry+2*s); ctx.lineTo(bx, topY); ctx.stroke();
+    ctx.fillStyle="#ffd27c"; ctx.beginPath(); ctx.arc(bx, topY-1.5*s, 2.2*s, 0, 6.29); ctx.fill();
+    var wav = reducedMotion? 0 : Math.sin(t/170+u.ph)*2.2*s;
+    var fw=17*s, fh=13*s;
+    ctx.fillStyle=col;
+    ctx.beginPath();
+    ctx.moveTo(bx, topY);
+    ctx.quadraticCurveTo(bx+dir*fw*0.55, topY+fh*0.18+wav, bx+dir*fw, topY+fh*0.30+wav);
+    ctx.lineTo(bx+dir*fw, topY+fh*0.92+wav*0.6);
+    ctx.quadraticCurveTo(bx+dir*fw*0.5, topY+fh*0.78, bx, topY+fh);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle="#ffd27c"; ctx.lineWidth=Math.max(1,1.2*s); ctx.stroke();
+    /* fringe */
+    ctx.strokeStyle=lite;
+    for(var fi=1; fi<=3; fi++){
+      ctx.beginPath(); ctx.moveTo(bx+dir*fw*(fi/3.4), topY+fh*0.95+wav*0.5);
+      ctx.lineTo(bx+dir*fw*(fi/3.4), topY+fh*1.22+wav*0.5); ctx.stroke();
+    }
+    ctx.fillStyle="#fff";
+    ctx.font="700 "+(10.5*s)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(u.side==="b"?"多":"空", bx+dir*fw*0.5, topY+fh*0.52+wav*0.7);
+  }
+  ctx.lineCap="butt";
+}
+function drawUnit(u, W, H, t){
+  var dir = u.face||(u.side==="b"? 1:-1);
+  var x = u.x*W;
+  /* lanes converge toward the clash line as the unit advances */
+  var prog = clamp(Math.abs(u.x-(u.side==="b"?0.075:0.925))/0.45, 0, 1);
+  var laneC = u.lane + (0.862-u.lane)*prog*0.55;
+  var y = laneC*H;
+  var s = (H/430) * (u.type==="gen"? 1.5 : u.type==="cmd"? 1.45 : u.type==="cav"? 1.12 : 1);
+  /* speed lines + dust while charging hard */
+  if(u.boost>1.15 && !reducedMotion){
+    ctx.strokeStyle = u.side==="b"? "rgba(124,194,255,.4)":"rgba(255,143,163,.4)";
+    ctx.lineWidth=1.6;
+    for(var li=0; li<3; li++){
+      var ly = y-(6+li*6)*s, len=(16+Math.random()*14)*s;
+      ctx.beginPath(); ctx.moveTo(x-dir*10*s, ly); ctx.lineTo(x-dir*10*s-dir*len, ly); ctx.stroke();
+    }
+  }
+  if(u.type==="cav" || u.type==="cmd") drawHorse(u, x, y, s, t, u.type==="cmd");
+  else drawInfantry(u, x, y, s, t);
+}
+
+/* charge-wave detection: a side's current-second taker flow far above its recent average */
+function detectWaves(now){
+  var sec = Math.floor(now/1000);
+  if(sec!==lastFlowSec){
+    if(lastFlowSec){
+      var pb=S.buckets[lastFlowSec];
+      flowHist.push(pb? (pb.buyUsd+pb.sellUsd):0);
+      if(flowHist.length>20) flowHist.shift();
+    }
+    lastFlowSec=sec;
+  }
+  if(!flowHist.length) return;
+  var avg=0; flowHist.forEach(function(v){ avg+=v; }); avg/=flowHist.length;
+  var cur=S.buckets[sec]; if(!cur) return;
+  var minSpike=Math.max(S.tiers.shell*1.2, avg*0.6);
+  [["b",cur.buyUsd],["r",cur.sellUsd]].forEach(function(pair){
+    var side=pair[0], v=pair[1];
+    if(v > avg*1.9 && v > minSpike && now-waveMark[side]>4500){
+      waveMark[side]=now;
+      var n = 6+Math.floor(Math.random()*4);
+      for(var i=0;i<n;i++){
+        (function(i, side){
+          setTimeout(function(){
+            spawnUnit("inf", side, {boost:1.75, x:(side==="b"?0.075:0.925)+(side==="b"?1:-1)*i*0.006, lane:0.80+Math.random()*0.12});
+          }, i*70);
+        })(i, side);
+      }
+      frontDyn.v += (side==="b"? 1:-1)*0.10;
+    }
+  });
+}
+
+/* ambient battlefield shouts: the pressing side's cry drifts across the
+   field, like the reference board — weighted to whoever is winning */
+function maybeShout(now){
+  if(reducedMotion) return;
+  if(now-lastShoutAt < 3800+Math.random()*2500) return;
+  if(Math.abs(S.scoreSmooth)<0.10) return;
+  var layer=$("shoutLayer"); if(!layer || layer.childElementCount>=3) return;
+  lastShoutAt=now;
+  var blue = S.scoreSmooth>0 ? Math.random()<0.72 : Math.random()<0.28;
+  var el=document.createElement("div");
+  el.className="shout-float "+(blue?"b":"r");
+  el.textContent = blue? T("多军冲锋！🚀","Blue army charges! 🚀") : T("空军砸盘！📉","Red army smashes! 📉");
+  el.style.top=(15+Math.random()*26)+"%";
+  if(blue){ el.style.left="4%"; el.style.setProperty("--fly","52vw"); }
+  else { el.style.right="4%"; el.style.setProperty("--fly","-52vw"); }
+  layer.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 6150);
+}
+
+function battleFrame(now){
+  requestAnimationFrame(battleFrame);
+  var dtms = now-lastFrameT; lastFrameT=now;
+  var dt = clamp(dtms/1000, 0.001, 0.05);
+  if(dtms>0) fpsEMA += ((1000/Math.max(dtms,1))-fpsEMA)*0.05;
+  particleFactor = fpsEMA<28? 0.3 : fpsEMA<40? 0.55 : 1;
+  var W=cv.width, H=cv.height;
+  var live = liveData();
+
+  /* patrol label */
+  if(live!==patrolState){
+    patrolState=live;
+    $("patrolTag").style.display = live? "none":"flex";
+  }
+
+  /* front line spring: pressure target with inertia + overshoot, no slow CSS crawl */
+  var acc=(S.front-frontDyn.x)*7.5 - frontDyn.v*3.1;
+  frontDyn.v+=acc*dt; frontDyn.x+=frontDyn.v*dt;
+  frontDyn.x=clamp(frontDyn.x, 0.06, 0.94);
+
+  /* consume battle events */
+  while(battleEvents.length){
+    var ev=battleEvents.shift();
+    var fromSide = ev.buy? "b":"r", toSide = ev.buy? "r":"b";
+    var fg=fortGeom(W,H,fromSide), tg=fortGeom(W,H,toSide);
+    if(ev.kind==="whale"){
+      spawnUnit("cmd", fromSide, {raid:true, boost:1.15});
+      for(var wi=0; wi<4; wi++) spawnUnit("inf", fromSide, {boost:1.5, lane:0.80+wi*0.03});
+      meteors.push({x:tg.cx+(Math.random()*30-15), y:-20, tx:tg.cx, ty:tg.y+tg.h*0.4, t:0, dur:0.85, enemy:toSide});
+    } else if(ev.kind==="heavy"){
+      spawnUnit("gen", fromSide, {raid:true, boost:1.25});
+      spawnUnit("inf", fromSide, {boost:1.4}); spawnUnit("inf", fromSide, {boost:1.4});
+    } else if(ev.kind==="shell"){
+      spawnUnit("cav", fromSide, {raid:true, boost:1.2});
+    } else if(ev.kind==="mini"){
+      shells.push({x:fg.cannonX, y:fg.cannonY, tx:tg.cx+(Math.random()*tg.w*0.5-tg.w*0.25), ty:tg.y+tg.h*0.45,
+        t:0, dur:0.55, big:false, enemy:toSide});
+    }
+  }
+
+  if(live) detectWaves(now);
+  if(live) maybeShout(now);
+
+  /* spawning: infantry flow follows trades/sec and side pressure */
+  var tps = tradesPerSec();
+  var share = clamp(0.5 + S.scoreSmooth*0.5, 0.12, 0.88);
+  if(live){
+    var rate = clamp(0.8 + tps*0.6, 0.8, 6.0);
+    if(S.surgeSide!==0) rate*=1.3;
+    spawnAcc.b += rate*share*dt*(S.surgeSide===1?1.5:1);
+    spawnAcc.r += rate*(1-share)*dt*(S.surgeSide===-1?1.5:1);
+  } else {
+    spawnAcc.b += 0.55*dt; spawnAcc.r += 0.55*dt;   /* standby patrol only — no fake trades */
+  }
+  var cap = Math.round(40*particleFactor)+12;
+  function countSide(sd){ var n=0; units.forEach(function(u){ if(u.side===sd) n++; }); return n; }
+  while(spawnAcc.b>=1){ spawnAcc.b--; if(countSide("b")<cap) spawnUnit("inf","b", live? {} : {mode:"patrol", boost:0.42, life:60}); }
+  while(spawnAcc.r>=1){ spawnAcc.r--; if(countSide("r")<cap) spawnUnit("inf","r", live? {} : {mode:"patrol", boost:0.42, life:60}); }
+
+  /* ---- draw scene ---- */
+  ctx.save();
+  if(shakeMag>0.15){
+    ctx.translate((Math.random()-0.5)*shakeMag, (Math.random()-0.5)*shakeMag*0.7);
+    shakeMag*=Math.exp(-5.5*dt);
+  }
+  var sky=ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,"#05081a"); sky.addColorStop(0.55,"#0a1330"); sky.addColorStop(0.72,"#0d1834"); sky.addColorStop(1,"#070b14");
+  ctx.fillStyle=sky; ctx.fillRect(-14,-10,W+28,H+20);
+  stars.forEach(function(st){
+    ctx.globalAlpha = reducedMotion? 0.7 : 0.45+0.4*Math.abs(Math.sin(now/1400+st.tw));
+    ctx.fillStyle="#cfe2ff"; ctx.beginPath(); ctx.arc(st.x*W, st.y*H, st.r, 0, 6.29); ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  /* moon with halo */
+  var mg=ctx.createRadialGradient(W*0.5,H*0.13,2,W*0.5,H*0.13,H*0.16);
+  mg.addColorStop(0,"rgba(233,238,247,.5)"); mg.addColorStop(1,"rgba(233,238,247,0)");
+  ctx.fillStyle=mg; ctx.beginPath(); ctx.arc(W*0.5,H*0.13,H*0.16,0,6.29); ctx.fill();
+  ctx.fillStyle="#eef2fa"; ctx.beginPath(); ctx.arc(W*0.5, H*0.13, H*0.045, 0, 6.29); ctx.fill();
+  ctx.fillStyle="#0a1128"; ctx.beginPath(); ctx.arc(W*0.515, H*0.115, H*0.04, 0, 6.29); ctx.fill();
+  /* distant ridge */
+  ctx.fillStyle="#0a1428";
+  ctx.beginPath(); ctx.moveTo(0,H*0.86);
+  for(var mx=0; mx<=10; mx++) ctx.lineTo(W*mx/10, H*(0.80+0.035*Math.sin(mx*1.7+2)));
+  ctx.lineTo(W,H*0.86); ctx.closePath(); ctx.fill();
+  var groundY=H*0.86;
+  var gg=ctx.createLinearGradient(0,groundY,0,H);
+  gg.addColorStop(0,"#0c1526"); gg.addColorStop(1,"#060a13");
+  ctx.fillStyle=gg; ctx.fillRect(-14,groundY,W+28,H-groundY+10);
+  /* ground perspective */
+  ctx.strokeStyle="rgba(96,128,180,.13)"; ctx.lineWidth=1;
+  for(var gi=1; gi<=4; gi++){
+    var gy=groundY+(H-groundY)*Math.pow(gi/4,1.6);
+    ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+  }
+  for(var vi=-4; vi<=4; vi++){
+    ctx.beginPath(); ctx.moveTo(W*0.5+vi*W*0.045, groundY); ctx.lineTo(W*0.5+vi*W*0.16, H); ctx.stroke();
+  }
+  ctx.fillStyle="rgba(120,160,220,.18)"; ctx.fillRect(-14,groundY,W+28,2);
+  /* territory tints pushed by the front */
+  var frontX = frontDyn.x*W;
+  ctx.fillStyle="rgba(61,155,255,.07)"; ctx.fillRect(0,groundY,frontX,H-groundY);
+  ctx.fillStyle="rgba(255,84,112,.07)"; ctx.fillRect(frontX,groundY,W-frontX,H-groundY);
+  /* drifting fog */
+  if(!reducedMotion){
+    for(var fi2=0; fi2<2; fi2++){
+      var fogX=((now*0.008*(fi2? -1:1))%(W*1.4))-W*0.2 + fi2*W*0.4;
+      var fogG=ctx.createRadialGradient(fogX, H*(0.66+fi2*0.1), 4, fogX, H*(0.66+fi2*0.1), W*0.30);
+      fogG.addColorStop(0,"rgba(170,195,235,.07)"); fogG.addColorStop(1,"rgba(170,195,235,0)");
+      ctx.fillStyle=fogG; ctx.fillRect(0,0,W,H);
+    }
+  }
+  /* front line beam */
+  var pulse = reducedMotion? 0.55 : 0.5+0.3*Math.sin(now/260);
+  var fg2=ctx.createLinearGradient(0,H*0.18,0,groundY);
+  fg2.addColorStop(0,"rgba(255,210,110,0)"); fg2.addColorStop(1,"rgba(255,210,110,"+pulse+")");
+  ctx.fillStyle="rgba(255,190,80,.13)"; ctx.fillRect(frontX-7, H*0.18, 14, groundY-H*0.18);
+  ctx.fillStyle=fg2; ctx.fillRect(frontX-1.5, H*0.18, 3, groundY-H*0.18);
+  var og=ctx.createRadialGradient(frontX,groundY+3,1,frontX,groundY+3,W*0.035);
+  og.addColorStop(0,"rgba(255,220,140,.85)"); og.addColorStop(1,"rgba(255,190,80,0)");
+  ctx.fillStyle=og; ctx.beginPath(); ctx.ellipse(frontX, groundY+3, W*0.035, 7, 0, 0, 6.29); ctx.fill();
+  /* fortresses */
+  dmgBlue=Math.max(0,dmgBlue-dt*1.1); dmgRed=Math.max(0,dmgRed-dt*1.1);
+  drawFort(W,H,"b",dmgBlue,now);
+  drawFort(W,H,"r",dmgRed,now);
+  /* smoke from damaged forts */
+  if(!reducedMotion){
+    if(dmgBlue>22 && Math.random()<0.30*particleFactor) smokes.push({x:W*0.09+Math.random()*W*0.03, y:H*0.36, t:0, life:2.4});
+    if(dmgRed>22 && Math.random()<0.30*particleFactor) smokes.push({x:W*0.90+Math.random()*W*0.03, y:H*0.36, t:0, life:2.4});
+  }
+  smokes=smokes.filter(function(sm){ sm.t+=dt; sm.y-=dt*H*0.03; return sm.t<sm.life; });
+  smokes.forEach(function(sm){
+    ctx.globalAlpha=0.20*(1-sm.t/sm.life);
+    ctx.fillStyle="#9aa7bd"; ctx.beginPath(); ctx.arc(sm.x, sm.y, 7+sm.t*7, 0, 6.29); ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  /* ---- units ---- */
+  units=units.filter(function(u){ u.life-=dt; return u.life>0; });
+  units.forEach(function(u){
+    var dir = u.side==="b"? 1:-1;
+    if(u.mode==="patrol"){
+      var lo = u.side==="b"? 0.10:0.66, hi = u.side==="b"? 0.34:0.90;
+      u.x += u.dir*u.sp*0.45*dt;
+      if(u.x>hi){ u.x=hi; u.dir=-1; } if(u.x<lo){ u.x=lo; u.dir=1; }
+      u.face=u.dir;
+      drawUnit(u, W, H, now);
+      return;
+    }
+    var surgeBoost = (S.surgeSide===1&&u.side==="b")||(S.surgeSide===-1&&u.side==="r") ? 1.45:1;
+    var tx = unitTargetX(u);
+    var nx = u.x + dir*u.sp*surgeBoost*dt;
+    /* crossing the front line: impact burst */
+    if(!u.clashed && ((dir>0 && u.x<frontDyn.x && nx>=frontDyn.x) || (dir<0 && u.x>frontDyn.x && nx<=frontDyn.x))){
+      u.clashed=true;
+      clashAt(frontX, (0.80+Math.random()*0.1)*H, u.side, u.type!=="inf");
+      frontDyn.v += dir*0.05;
+    }
+    var reached = (dir>0 && nx>=tx) || (dir<0 && nx<=tx);
+    if(reached){
+      if(u.raid){
+        var tg2=fortGeom(W,H,u.side==="b"?"r":"b");
+        explode(tx*W, tg2.y+tg2.h*0.5, u.type!=="cav", u.side==="b"?"r":"b");
+        if(u.side==="b") dmgRed=Math.min(100,dmgRed+(u.type==="cmd"?20:u.type==="gen"?13:6));
+        else dmgBlue=Math.min(100,dmgBlue+(u.type==="cmd"?20:u.type==="gen"?13:6));
+        addShake(u.type==="cmd"? 5:2.2);
+      } else {
+        clashAt(tx*W, (0.80+Math.random()*0.1)*H, u.side, false);
+      }
+      u.life=0;
+      return;
+    }
+    u.x=nx;
+    /* dust at the feet while charging */
+    if(!reducedMotion && u.boost>1.1 && Math.random()<0.35*particleFactor){
+      dusts.push({x:u.x*W-dir*8, y:(u.lane+0.02)*H, t:0, life:0.55, r:2+Math.random()*2.5});
+    }
+    drawUnit(u, W, H, now);
+  });
+  /* dust */
+  dusts=dusts.filter(function(d){ d.t+=dt; return d.t<d.life; });
+  dusts.forEach(function(d){
+    ctx.globalAlpha=0.30*(1-d.t/d.life);
+    ctx.fillStyle="#b39b72"; ctx.beginPath(); ctx.arc(d.x, d.y-d.t*7, d.r+d.t*7, 0, 6.29); ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  /* mini shells */
+  shells=shells.filter(function(sh){
+    sh.t += dt/sh.dur;
+    if(sh.t>=1){
+      explode(sh.tx, sh.ty, false, sh.enemy);
+      if(sh.enemy==="r") dmgRed=Math.min(100,dmgRed+2.5); else dmgBlue=Math.min(100,dmgBlue+2.5);
+      return false;
+    }
+    var x = sh.x + (sh.tx-sh.x)*sh.t;
+    var y = sh.y + (sh.ty-sh.y)*sh.t - Math.sin(sh.t*Math.PI)*H*0.26;
+    ctx.fillStyle="rgba(255,210,110,.30)"; ctx.beginPath(); ctx.arc(x,y,6,0,6.29); ctx.fill();
+    ctx.fillStyle="#ffd27c"; ctx.beginPath(); ctx.arc(x,y,2.6,0,6.29); ctx.fill();
+    return true;
+  });
+  /* meteors (whale airstrike) */
+  meteors=meteors.filter(function(m){
+    m.t += dt/m.dur;
+    if(m.t>=1){
+      explode(m.tx, m.ty, true, m.enemy); explode(m.tx, m.ty, true, m.enemy);
+      flashes.push({x:m.tx, y:m.ty, t:0, life:0.4, r:64});
+      if(m.enemy==="r") dmgRed=Math.min(100,dmgRed+34); else dmgBlue=Math.min(100,dmgBlue+34);
+      addShake(7);
+      return false;
+    }
+    var x = m.x + (m.tx-m.x)*m.t, y = m.y + (m.ty-m.y)*m.t*m.t;
+    ctx.strokeStyle="rgba(255,178,36,.4)"; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(x-26, y-44); ctx.lineTo(x, y); ctx.stroke();
+    var grad=ctx.createRadialGradient(x,y,1,x,y,22);
+    grad.addColorStop(0,"#fff3d6"); grad.addColorStop(0.4,"#ffb224"); grad.addColorStop(1,"rgba(255,120,40,0)");
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(x,y,22,0,6.29); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(x,y,4.5,0,6.29); ctx.fill();
+    return true;
+  });
+  /* clash flashes */
+  flashes=flashes.filter(function(f){
+    f.t+=dt; if(f.t>f.life) return false;
+    var a=1-f.t/f.life;
+    var fg3=ctx.createRadialGradient(f.x,f.y,1,f.x,f.y,f.r);
+    fg3.addColorStop(0,"rgba(255,246,214,"+(0.85*a)+")"); fg3.addColorStop(0.5,"rgba(255,196,90,"+(0.4*a)+")"); fg3.addColorStop(1,"rgba(255,160,60,0)");
+    ctx.fillStyle=fg3; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,6.29); ctx.fill();
+    return true;
+  });
+  /* particles */
+  parts=parts.filter(function(p){
+    p.t+=dt; if(p.t>p.life) return false;
+    p.x+=p.vx*W*dt*0.14; p.y+=p.vy*H*dt*0.14; p.vy+=dt*0.35;
+    ctx.globalAlpha=1-p.t/p.life;
+    ctx.fillStyle=p.c; ctx.fillRect(p.x, p.y, 2.6, 2.6);
+    return true;
+  });
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+function sizeCanvas(){
+  var stage=$("battleStage");
+  var w=stage.clientWidth;
+  var h;
+  if(window.innerWidth<=640) h=Math.max(250, Math.round(w*0.72));
+  else h=Math.max(400, Math.round(w*0.40));
+  var dpr=Math.min(window.devicePixelRatio||1, 2);
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  cv.style.height=h+"px";
+}
+
+/* ================================================================
+   MUSIC — Web Audio war drums, OFF by default
+   ================================================================ */
+var music = { on:false, ctx:null, style:"drums", bpm:96, timer:null, nextStep:0, step:0,
+              lastPluck:0, pluckIdx:2, master:null, verb:null, noiseBuf:null, padGains:[], level:1,
+              outEl:null, gen:0, vol: store.get("vol", 0.92) };
+function mf(midi){ return 440*Math.pow(2,(midi-69)/12); }
+function musicInit(){
+  var AC = window.AudioContext||window.webkitAudioContext;
+  if(!AC) return false;
+  var ac = new AC();
+  music.ctx = ac;
+  var comp = ac.createDynamicsCompressor();
+  comp.threshold.value=-10; comp.knee.value=16; comp.ratio.value=4;
+  comp.attack.value=0.004; comp.release.value=0.18;
+  var master = ac.createGain(); master.gain.value=music.vol;
+  master.connect(comp);
+  music.master = master;
+  /* Route the mix out through an <audio> element when possible: raw Web Audio
+     output follows the phone's ambient channel and is silenced by the iPhone
+     mute switch, while an <audio> element playing a stream uses the media
+     channel and stays audible. Fall back to the plain destination. */
+  music.outEl = null;
+  try{
+    var msd = ac.createMediaStreamDestination();
+    comp.connect(msd);
+    var outEl = document.createElement("audio");
+    outEl.setAttribute("playsinline","");
+    outEl.style.display="none";
+    outEl.srcObject = msd.stream;
+    document.body.appendChild(outEl);
+    music.outEl = outEl;
+  }catch(e){
+    try{ comp.connect(ac.destination); }catch(e2){}
+  }
+  /* generated-impulse reverb */
+  var len = Math.floor(ac.sampleRate*1.9), ir = ac.createBuffer(2, len, ac.sampleRate);
+  for(var ch=0; ch<2; ch++){
+    var d = ir.getChannelData(ch);
+    for(var i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len, 2.7);
+  }
+  var verb = ac.createConvolver(); verb.buffer=ir;
+  var vg = ac.createGain(); vg.gain.value=0.5;
+  verb.connect(vg); vg.connect(master);
+  music.verb = verb;
+  /* shared noise buffer */
+  var nb = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), nd = nb.getChannelData(0);
+  for(var j=0;j<nd.length;j++) nd[j]=Math.random()*2-1;
+  music.noiseBuf = nb;
+  return true;
+}
+function sendVerb(node, amt){
+  if(!music.verb || amt<=0) return;
+  var g = music.ctx.createGain(); g.gain.value = amt;
+  node.connect(g); g.connect(music.verb);
+}
+function noiseHit(t, dur, vol, freq, q){
+  var ac = music.ctx;
+  var src = ac.createBufferSource(); src.buffer = music.noiseBuf;
+  src.playbackRate.value = 0.9+Math.random()*0.2;
+  var f = ac.createBiquadFilter(); f.type="bandpass"; f.frequency.value=freq; f.Q.value=q||0.9;
+  var g = ac.createGain();
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+  src.connect(f); f.connect(g); g.connect(music.master); sendVerb(g, 0.15);
+  src.start(t); src.stop(t+dur+0.05);
+}
+/* taiko: sine pitch-drop body + skin noise + triangle overtone */
+function taiko(t, vol, big){
+  var ac = music.ctx;
+  var o = ac.createOscillator(), g = ac.createGain();
+  o.type="sine";
+  o.frequency.setValueAtTime(big? 165:150, t);
+  o.frequency.exponentialRampToValueAtTime(big? 40:48, t+(big? 0.34:0.27));
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+(big? 0.55:0.42));
+  o.connect(g); g.connect(music.master); sendVerb(g, big? 0.3:0.2);
+  o.start(t); o.stop(t+0.6);
+  noiseHit(t, 0.08, vol*0.45, big? 700:950, 0.7);
+  var o2 = ac.createOscillator(), g2 = ac.createGain();
+  o2.type="triangle";
+  o2.frequency.setValueAtTime(big? 310:302, t);
+  o2.frequency.exponentialRampToValueAtTime(118, t+0.12);
+  g2.gain.setValueAtTime(vol*0.22, t);
+  g2.gain.exponentialRampToValueAtTime(0.001, t+0.15);
+  o2.connect(g2); g2.connect(music.master);
+  o2.start(t); o2.stop(t+0.17);
+}
+var TAIKO_PATTERNS = [
+  [1,0,0,0, 0,0,.55,0, 0,0,.9,0, 0,0,.45,0],
+  [1,0,0,.45, 0,0,.65,0, .9,0,0,.45, 0,.55,0,0],
+  [1,0,.5,0, .7,0,.5,.55, 1,0,.5,0, .7,.5,.6,0],
+  [1,.4,.6,.4, .8,.4,.6,.75, 1,.4,.6,.4, .8,.6,.9,.7]
+];
+/* chord progressions in D minor — blue rises bright, red sinks dark */
+var PROG_BLUE = [ {root:38, notes:[62,65,69]}, {root:34, notes:[58,62,65]},
+                  {root:36, notes:[60,64,67]}, {root:38, notes:[62,65,69]} ];   /* Dm – Bb – C – Dm */
+var PROG_RED  = [ {root:38, notes:[62,65,69]}, {root:36, notes:[60,64,67]},
+                  {root:34, notes:[58,62,65]}, {root:33, notes:[57,61,64]} ];   /* Dm – C – Bb – A */
+function currentChord(bar){
+  var prog = S.scoreSmooth < -0.08 ? PROG_RED : PROG_BLUE;
+  return prog[bar % 4];
+}
+function padChord(t, chord, dur){
+  var ac = music.ctx;
+  var epic = music.style==="epic";
+  var g = ac.createGain();
+  var peak = epic? 0.13:0.075;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak, t+dur*0.3);
+  g.gain.setValueAtTime(peak, t+dur*0.72);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  var f = ac.createBiquadFilter(); f.type="lowpass"; f.frequency.value = epic? 1250:850; f.Q.value=0.4;
+  f.connect(g); g.connect(music.master); sendVerb(g, 0.55);
+  chord.notes.forEach(function(n){
+    [-6, 5].forEach(function(det){
+      var o = ac.createOscillator();
+      o.type = epic? "sawtooth":"triangle";
+      o.frequency.value = mf(n); o.detune.value = det;
+      o.connect(f); o.start(t); o.stop(t+dur+0.05);
+    });
+  });
+  /* sub drone on the root */
+  var so = ac.createOscillator(), sg = ac.createGain();
+  so.type="sine"; so.frequency.value = mf(chord.root+12);
+  sg.gain.setValueAtTime(0.0001, t);
+  sg.gain.exponentialRampToValueAtTime(0.17, t+dur*0.25);
+  sg.gain.setValueAtTime(0.17, t+dur*0.75);
+  sg.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  so.connect(sg); sg.connect(music.master);
+  so.start(t); so.stop(t+dur+0.05);
+  music.padGains.push(g);
+  if(music.padGains.length>6) music.padGains.shift();
+}
+function bassPulse(t, midi, vol, dur){
+  var ac = music.ctx;
+  var o = ac.createOscillator(), g = ac.createGain();
+  o.type="triangle"; o.frequency.value = mf(midi);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+  o.connect(g); g.connect(music.master);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function brassMotif(t, stepDur){
+  var ac = music.ctx;
+  var epic = music.style==="epic";
+  var up = S.scoreSmooth >= -0.08;
+  var seq = up? [62,65,69,74] : [69,65,62,57];
+  var peak = epic? 0.17:0.09;
+  seq.forEach(function(n, i){
+    var tt = t + i*stepDur*2;
+    var o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter();
+    o.type="sawtooth"; o.frequency.value = mf(n);
+    f.type="lowpass"; f.Q.value=1.1;
+    f.frequency.setValueAtTime(500, tt);
+    f.frequency.exponentialRampToValueAtTime(1900, tt+stepDur*1.4);
+    f.frequency.exponentialRampToValueAtTime(600, tt+stepDur*2);
+    g.gain.setValueAtTime(0.0001, tt);
+    g.gain.exponentialRampToValueAtTime(peak, tt+0.05);
+    g.gain.setValueAtTime(peak, tt+stepDur*1.2);
+    g.gain.exponentialRampToValueAtTime(0.0001, tt+stepDur*2);
+    o.connect(f); f.connect(g); g.connect(music.master); sendVerb(g, 0.4);
+    o.start(tt); o.stop(tt+stepDur*2+0.05);
+  });
+}
+function musicEnergy(){
+  var e = 0.22 + Math.abs(S.scoreSmooth)*0.5 + clamp(tradesPerSec()/7, 0, 0.28);
+  if(S.surgeSide!==0) e = Math.max(e, 0.88);
+  if(!liveData()) e = Math.min(e, 0.3);
+  return clamp(e, 0, 1);
+}
+function scheduleStep(step, t){
+  var bar = Math.floor(step/16), s16 = step % 16;
+  var stepDur = 60/music.bpm/4;
+  if(s16===0){
+    music.level = clamp(Math.floor(musicEnergy()*3.99), 0, 3);
+    padChord(t, currentChord(bar), stepDur*16);
+    if(bar%2===1 && musicEnergy()>0.45) brassMotif(t, stepDur);
+  }
+  var pat = TAIKO_PATTERNS[music.level];
+  var v = pat[s16];
+  if(v>0){
+    var big = s16===0 || (S.surgeSide!==0 && s16===8);
+    taiko(t, v*(big? 0.88:0.58)*(music.style==="epic"? 1.05:1), big);
+  }
+  if(s16%4===2) noiseHit(t, 0.045, 0.08+music.level*0.02, 2800, 1.4);   /* shaker tick */
+  var chord = currentChord(bar);
+  if(s16===0 || s16===4 || s16===8 || s16===12) bassPulse(t, chord.root+12, 0.26, stepDur*3.2);
+  if(music.level>=2 && (s16===7 || s16===14)) bassPulse(t, chord.root+12, 0.16, stepDur*1.6);
+  if(music.style==="epic" && music.level>=2 && s16===12) taiko(t+stepDur*0.5, 0.2, false);
+}
+function musicSchedule(){
+  if(!music.on || !music.ctx) return;
+  /* tempo glides toward the signed-momentum target: blue pressure = faster
+     and brighter, red pressure = slower and darker — never independent */
+  var target = targetBpm();
+  music.bpm += (target - music.bpm)*0.35;
+  var stepDur = 60/music.bpm/4;
+  while(music.nextStep < music.ctx.currentTime + 0.20){
+    scheduleStep(music.step, music.nextStep);
+    music.nextStep += stepDur;
+    music.step++;
+  }
+  updateMusicBtnThrottled();
+}
+var lastBtnUpd=0;
+function updateMusicBtnThrottled(){
+  var n=Date.now(); if(n-lastBtnUpd<900) return; lastBtnUpd=n;
+  updateMusicBtn();
+}
+function musicToggle(){
+  music.gen++;
+  if(!music.on){
+    if(!music.ctx && !musicInit()) return;
+    var ac = music.ctx, t0 = ac.currentTime;
+    /* undo any stop-fade/suspend left over from the previous session */
+    if(music.master){
+      try{
+        music.master.gain.cancelScheduledValues(t0);
+        music.master.gain.setValueAtTime(music.vol, t0);
+      }catch(e){}
+    }
+    if(ac.state!=="running"){ var rp=ac.resume(); if(rp&&rp.catch) rp.catch(function(){}); }
+    if(music.outEl){ var pp=music.outEl.play(); if(pp&&pp.catch) pp.catch(function(){}); }
+    music.on=true; music.step=0;
+    music.nextStep=t0+0.05;
+    clearInterval(music.timer);
+    music.timer=setInterval(musicSchedule, 80);
+    musicSchedule();
+    taiko(t0+0.02, 0.95, true);            /* opening drum: sound the instant it is switched on */
+    noiseHit(t0+0.02, 0.3, 0.12, 300, 0.7);
+  } else {
+    music.on=false;
+    clearInterval(music.timer);
+    var ac2 = music.ctx, gen = music.gen;
+    /* stop means stop: cut the master bus, pause the output element, then
+       suspend the context so every already-scheduled note goes silent */
+    if(ac2 && music.master){
+      var t = ac2.currentTime;
+      try{
+        music.master.gain.cancelScheduledValues(t);
+        music.master.gain.setValueAtTime(music.master.gain.value, t);
+        music.master.gain.linearRampToValueAtTime(0.0001, t+0.09);
+      }catch(e){}
+    }
+    if(music.outEl){ try{ music.outEl.pause(); }catch(e){} }
+    setTimeout(function(){
+      if(music.gen===gen && !music.on && music.ctx){ var sp=music.ctx.suspend(); if(sp&&sp.catch) sp.catch(function(){}); }
+    }, 140);
+  }
+  updateMusicBtn();
+}
+function updateMusicBtn(){
+  var b=$("musicBtn");
+  if(music.on){
+    b.textContent="🎵 "+(music.style==="epic"? T("史诗","Epic"):T("战鼓","Drums"))+" · "+Math.round(music.bpm)+" BPM";
+    b.classList.add("on"); b.setAttribute("aria-pressed","true");
+  } else {
+    b.textContent="🔇 "+T("配乐关","Music Off"); b.classList.remove("on"); b.setAttribute("aria-pressed","false");
+  }
+}
+function musicBoom(){
+  if(!music.on || !music.ctx) return;
+  var t=music.ctx.currentTime;
+  taiko(t, 1.0, true);
+  noiseHit(t, 0.5, 0.3, 240, 0.6);
+}
+var PLUCK_SCALE=[62,65,67,69,72,74,77];   /* D minor: D F G A C D F */
+function musicPluck(){
+  if(!music.on || !music.ctx) return;
+  var now=performance.now();
+  if(now-music.lastPluck<240) return;
+  music.lastPluck=now;
+  var up = S.price>=S.prevPrice;
+  music.pluckIdx = clamp(music.pluckIdx + (up? 1:-1), 0, PLUCK_SCALE.length-1);
+  var ac=music.ctx, t=ac.currentTime;
+  var o=ac.createOscillator(), g=ac.createGain();
+  o.type="triangle"; o.frequency.value=mf(PLUCK_SCALE[music.pluckIdx]);
+  g.gain.setValueAtTime(0.09, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+0.3);
+  o.connect(g); g.connect(music.master); sendVerb(g, 0.45);
+  o.start(t); o.stop(t+0.32);
+}
+
+/* ================================================================
+   CHEER (local only)
+   ================================================================ */
+var CHEERS_B=["多军冲锋！","买买买！","冲上云霄！","多头必胜！"];
+var CHEERS_R=["空军压境！","砸盘啦！","空头必胜！","瀑布预警！"];
+function doCheer(side){
+  if(side==="b"){ cheerCounts.long++; } else { cheerCounts.short++; }
+  store.set("cheer", cheerCounts);
+  $("cheerLongN").textContent=cheerCounts.long;
+  $("cheerShortN").textContent=cheerCounts.short;
+  var stage=$("battleStage");
+  var el=document.createElement("div");
+  el.className="cheer-float "+side;
+  var texts = side==="b"? CHEERS_B:CHEERS_R;
+  el.textContent=texts[Math.floor(Math.random()*texts.length)];
+  el.style.top=(22+Math.random()*30)+"%";
+  if(side==="b"){ el.style.left="6%"; el.style.setProperty("--fly","46vw"); }
+  else { el.style.right="6%"; el.style.setProperty("--fly","-46vw"); }
+  stage.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3400);
+}
+
+/* ================================================================
+   COIN TABS / SEARCH / FAVORITES / RECENTS
+   ================================================================ */
+function coinName(base){
+  for(var i=0;i<COINS.length;i++) if(COINS[i][0]===base) return COINS[i][1];
+  return "";
+}
+function renderTabs(){
+  var html = MAIN_TABS.map(function(b){
+    var fav = favorites.indexOf(b)>=0 ? '<span class="star">★</span>':"";
+    return '<button class="tab'+(b===S.base?" on":"")+'" data-base="'+b+'">'+b+fav+"</button>";
+  }).join("");
+  if(MAIN_TABS.indexOf(S.base)<0){
+    html += '<button class="tab on" data-base="'+S.base+'">'+esc(S.base)+"</button>";
+  }
+  $("coinTabs").innerHTML=html;
+  Array.prototype.forEach.call($("coinTabs").querySelectorAll(".tab"), function(btn){
+    btn.addEventListener("click", function(){ selectCoin(btn.getAttribute("data-base"), btn.getAttribute("data-base")+"USDT"); });
+  });
+  renderChipRows();
+}
+/* ---------------- BTC / ETH quick cards (top row) ---------------- */
+var miniQuotes = {};
+function pollMiniQuotes(){
+  ["BTC","ETH"].forEach(function(b){
+    /* Gate.io first (China-direct), Binance Vision as fallback */
+    fetchTimeout("https://api.gateio.ws/api/v4/spot/tickers?currency_pair="+b+"_USDT", 5000).then(function(j){
+      if(!j || !j[0]) throw new Error("empty");
+      miniQuotes[b] = {p:parseFloat(j[0].last), chg:parseFloat(j[0].change_percentage)/100};
+    }).catch(function(){
+      fetchTimeout("https://data-api.binance.vision/api/v3/ticker/24hr?symbol="+b+"USDT", 5000).then(function(j){
+        miniQuotes[b] = {p:parseFloat(j.lastPrice), chg:parseFloat(j.priceChangePercent)/100};
+      }).catch(function(){});
+    });
+  });
+}
+function updateQuickCards(){
+  ["BTC","ETH"].forEach(function(b){
+    var card = $("qc"+b); if(!card) return;
+    var q = miniQuotes[b];
+    var p = (S.base===b && S.price)? S.price : (q? q.p : 0);
+    var c = (S.base===b && S.price)? S.chg24 : (q? q.chg : 0);
+    $("qc"+b+"P").textContent = p? fmtPrice(p) : "—";
+    var ce = $("qc"+b+"C");
+    ce.textContent = p? ((c>=0?"+":"")+(c*100).toFixed(2)+"%") : "—";
+    ce.className = "qc-chg " + (c>=0? "up":"dn");
+    card.classList.toggle("on", S.base===b);
+  });
+}
+function renderChipRows(){
+  function row(el, list, label){
+    if(!list.length){ el.style.display="none"; return; }
+    el.style.display="flex";
+    el.innerHTML='<span class="lbl">'+label+'</span>'+list.map(function(b){
+      return '<button class="chip" data-base="'+b+'">'+b+" "+esc(coinName(b))+"</button>";
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(c){
+      c.addEventListener("click", function(){ selectCoin(c.getAttribute("data-base"), c.getAttribute("data-base")+"USDT"); });
+    });
+  }
+  row($("recentRow"), recents.filter(function(b){return b!==S.base;}).slice(0,6), T("最近：","Recent:"));
+  row($("favRow"), favorites, T("收藏：","Saved:"));
+}
+function pushRecent(base){
+  recents = [base].concat(recents.filter(function(b){return b!==base;})).slice(0,8);
+  store.set("recents", recents);
+}
+function updateFavBtn(){
+  var on = favorites.indexOf(S.base)>=0;
+  $("favBtn").textContent = on? T("★ 已收藏","★ Saved"):T("☆ 收藏","☆ Save");
+  $("favBtn").classList.toggle("on", on);
+}
+function selectCoin(base, symbol){
+  if(symbol===S.symbol && S.connState!=="offline") return;
+  switchSymbol(base.toUpperCase(), symbol.toUpperCase());
+}
+/* search */
+var searchInput=$("coinSearch"), searchResults=$("searchResults");
+function renderSearch(q){
+  q=(q||"").trim().toLowerCase();
+  if(!q){ searchResults.className="search-results"; searchResults.innerHTML=""; return; }
+  var hits=COINS.filter(function(c){
+    return c[0].toLowerCase().indexOf(q)>=0 || c[1].indexOf(q)>=0;
+  }).slice(0,9);
+  var html=hits.map(function(c){
+    return '<button data-base="'+c[0]+'"><span class="code">'+c[0]+'</span><span class="nm">'+esc(c[1])+" · "+c[0]+"USDT</span></button>";
+  }).join("");
+  html += '<button data-custom="1"><span class="code">'+esc(q.toUpperCase())+'</span><span class="nm">按输入的交易对直接查找（回车确认）</span></button>';
+  searchResults.innerHTML=html;
+  searchResults.className="search-results open";
+  Array.prototype.forEach.call(searchResults.querySelectorAll("button"), function(b){
+    b.addEventListener("click", function(){
+      if(b.getAttribute("data-custom")){ submitCustomSymbol(searchInput.value); }
+      else { selectCoin(b.getAttribute("data-base"), b.getAttribute("data-base")+"USDT"); closeSearch(); }
+    });
+  });
+}
+function closeSearch(){ searchResults.className="search-results"; }
+function submitCustomSymbol(raw){
+  var s=(raw||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(!s) return;
+  if(!/(USDT|USDC|BUSD|BTC|ETH|BNB|FDUSD|TUSD)$/.test(s)) s+="USDT";
+  searchResults.innerHTML='<div class="notfound" style="color:var(--ink2)">正在验证 '+esc(s)+" …</div>";
+  searchResults.className="search-results open";
+  var base=s.replace(/(USDT|USDC|BUSD|FDUSD|TUSD)$/,"");
+  var checks=[];
+  if(/USDT$/.test(s)) checks.push(fetchTimeout("https://api.gateio.ws/api/v4/spot/tickers?currency_pair="+base+"_USDT", 5000));
+  checks.push(fetchTimeout("https://api.mexc.com/api/v3/ticker/24hr?symbol="+s, 5000));
+  checks.push(fetchTimeout("https://data-api.binance.vision/api/v3/ticker/24hr?symbol="+s, 5000));
+  var done=false;
+  function ok(){ if(done) return; done=true; closeSearch(); switchSymbol(base, s); }
+  function bad(){
+    if(done) return; done=true;
+    searchResults.innerHTML='<div class="notfound">未找到交易对 '+esc(s)+"，请检查代码</div>";
+    searchResults.className="search-results open";
+  }
+  var pending=checks.length;
+  checks.forEach(function(p){
+    p.then(ok).catch(function(){ if(--pending<=0) bad(); });
+  });
+}
+
+/* ================================================================
+   LANGUAGE (中文 / EN)
+   ================================================================ */
+var I18N = {
+  brandSub:["多空战场","Long vs Short"],
+  kHi:["24h 最高","24h High"], kLo:["24h 最低","24h Low"], kVol:["24h 量","24h Volume"], kAmt:["24h 成交额","24h Turnover"],
+  plBlue:["蓝军","Blue"], plRed:["红军","Red"],
+  tagBlue:["蓝军 · 买方","Blue · Buyers"], tagRed:["卖方 · 红军","Sellers · Red"],
+  patrolTxt:["等待实时数据 · 待机巡逻","Waiting for live data · on patrol"],
+  cheerNote:["本地助威 · 仅本机可见 · 不上传，计数只存在这台设备","Local cheers · this device only · never uploaded"],
+  clT:["看多","Long"], csT:["看空","Short"],
+  hTaker:["主动买卖（吃单）","Taker Flow"], hTakerSub:["蓝=主动买 · 红=主动卖","Blue = taker buy · Red = taker sell"],
+  hFlow:["近 2 分钟吃单流","Taker Flow · Last 2 Min"], hFlowSub:["每秒净流向","net per second"],
+  hBook:["订单簿深度","Order Book Depth"], hBookSub:["挂单金额（USD）","resting size (USD)"],
+  bkBidL:["最佳买价","Best Bid"], bkAskL:["最佳卖价","Best Ask"], bkSpreadL:["价差","Spread"],
+  hDepth:["深度曲线","Depth Curve"], hDepthSub:["±2% 累计","±2% cumulative"],
+  hFeedT:["大单动态","Large Trades"],
+  fcAll:["全部大单","All"], fcHeavy:["重炮起","Heavy +"], fcWhale:["巨鲸起","Whale +"],
+  thTime:["时间","Time"], thSide:["方向","Side"], thPrice:["价格","Price"], thQty:["数量","Qty"], thAmt:["金额","Value"], thTier:["级别","Tier"],
+  feedEmpty:["暂无达到门槛的大单，等待成交…","No large trades yet — waiting…"],
+  formulaSum:["公式详情","Formula"],
+  footerNote:["行情多源自动切换：Gate.io、MEXC、Bitget 等国内可直连源优先，断线自动换源，无需翻墙。仅供娱乐参考，不构成投资建议。战力只是盘面气氛的可视化，不是交易信号。","Multi-source feeds with automatic failover: China-direct sources (Gate.io, MEXC, Bitget) first — no VPN needed. For entertainment only — not investment advice. Power is a mood visual, not a trading signal."],
+  footerCredit:["灵感来自 Crypto War by @0xVeryBigOrange，独立重新实现。","Inspired by Crypto War by @0xVeryBigOrange; independently reimplemented."],
+  cerSub:["多 空 对 决 战 场","L O N G   vs   S H O R T"],
+  msDrums:["战鼓","Drums"], msEpic:["史诗","Epic"]
+};
+function applyLang(){
+  for(var id in I18N){ var el=$(id); if(el) el.textContent = LANG==="en"? I18N[id][1] : I18N[id][0]; }
+  $("langBtn").textContent = LANG==="en"? "中文" : "EN";
+  document.documentElement.lang = LANG==="en"? "en" : "zh-CN";
+  var si=$("coinSearch"); if(si) si.placeholder = T("搜索币种 / 代码 / 任意 USDT 交易对","Search coin / symbol / any USDT pair");
+  var vs=$("volSlider"); if(vs) vs.setAttribute("aria-label", T("音量","Volume"));
+  var lb=$("liveBadge");
+  if(lb && S.connState!=="live") lb.textContent = S.connState==="offline"? T("离线","OFFLINE") : T("连接中","LINKING");
+  if(!S.feedOldestMs) $("feedNote").textContent = T("正在载入历史大单…","Loading large-trade history…");
+  computeTiers(); buildWinBlocks(); renderFeed(); updateFavBtn(); updateMusicBtn(); renderTabs();
+}
+
+/* ================================================================
+   WIRING + INIT
+   ================================================================ */
+function init(){
+  buildWinBlocks();
+  renderTabs(); updateFavBtn();
+  $("cheerLongN").textContent=cheerCounts.long;
+  $("cheerShortN").textContent=cheerCounts.short;
+  $("symName").textContent="BTC / USDT";
+  computeTiers();
+  searchInput.addEventListener("input", function(){ renderSearch(searchInput.value); });
+  searchInput.addEventListener("keydown", function(e){
+    if(e.key==="Enter"){ submitCustomSymbol(searchInput.value); }
+    if(e.key==="Escape") closeSearch();
+  });
+  document.addEventListener("click", function(e){
+    if(!e.target.closest(".searchbox")) closeSearch();
+  });
+  $("favBtn").addEventListener("click", function(){
+    var i=favorites.indexOf(S.base);
+    if(i>=0) favorites.splice(i,1); else favorites.push(S.base);
+    store.set("favorites", favorites);
+    updateFavBtn(); renderTabs();
+  });
+  $("musicBtn").addEventListener("click", musicToggle);
+  /* iOS can leave the context suspended/interrupted after an app switch or a
+     call; while music is on, any tap re-arms the audio instead of staying mute */
+  document.addEventListener("pointerdown", function(){
+    if(!music.on || !music.ctx) return;
+    if(music.ctx.state!=="running"){ var rp=music.ctx.resume(); if(rp&&rp.catch) rp.catch(function(){}); }
+    if(music.outEl && music.outEl.paused){ var pp=music.outEl.play(); if(pp&&pp.catch) pp.catch(function(){}); }
+  });
+  /* quick coin cards */
+  $("qcBTC").addEventListener("click", function(){ selectCoin("BTC","BTCUSDT"); });
+  $("qcETH").addEventListener("click", function(){ selectCoin("ETH","ETHUSDT"); });
+  pollMiniQuotes();
+  setInterval(pollMiniQuotes, 8000);
+  /* language switch */
+  $("langBtn").addEventListener("click", function(){
+    LANG = LANG==="en"? "zh":"en";
+    store.set("lang", LANG);
+    applyLang();
+  });
+  /* volume slider: default loud (92%), user-adjustable, applies live */
+  var volSlider=$("volSlider");
+  volSlider.value = Math.round(music.vol*100);
+  volSlider.addEventListener("input", function(){
+    music.vol = clamp(parseInt(volSlider.value,10)/100, 0, 1);
+    store.set("vol", music.vol);
+    if(music.ctx && music.master && music.on){
+      music.master.gain.setTargetAtTime(music.vol, music.ctx.currentTime, 0.03);
+    }
+  });
+  applyLang();
+  Array.prototype.forEach.call(document.querySelectorAll(".mstyle"), function(b){
+    b.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".mstyle"), function(x){
+        x.classList.remove("on"); x.setAttribute("aria-pressed","false");
+      });
+      b.classList.add("on"); b.setAttribute("aria-pressed","true");
+      music.style = b.getAttribute("data-style");
+      if(music.on) updateMusicBtn();
+    });
+  });
+  /* entry ceremony: gates open, flags unfurl, 开战 — auto-dismisses, click skips.
+     Purely visual; never blocks the page, music stays off unless the user enabled it. */
+  var cer=$("ceremony");
+  if(cer){
+    requestAnimationFrame(function(){ cer.classList.add("go"); });
+    var cerDone=false;
+    var endCer=function(){
+      if(cerDone) return; cerDone=true;
+      cer.classList.add("done");
+      setTimeout(function(){ if(cer.parentNode) cer.parentNode.removeChild(cer); }, 650);
+    };
+    setTimeout(endCer, reducedMotion? 1100:2300);
+    cer.addEventListener("click", endCer);
+  }
+  $("cheerLong").addEventListener("click", function(){ doCheer("b"); });
+  $("cheerShort").addEventListener("click", function(){ doCheer("r"); });
+  Array.prototype.forEach.call($("feedChips").querySelectorAll(".fchip"), function(c){
+    c.addEventListener("click", function(){
+      Array.prototype.forEach.call($("feedChips").querySelectorAll(".fchip"), function(x){ x.classList.remove("on"); });
+      c.classList.add("on");
+      var v=c.getAttribute("data-min");
+      S.feedMin = v==="0"? 0 : v;
+      renderFeed();
+    });
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden) battleEvents.length=0;
+  });
+  window.addEventListener("resize", sizeCanvas);
+  sizeCanvas();
+  S.liveSinceMs=Date.now();
+  setInterval(renderStats, 250);
+  requestAnimationFrame(battleFrame);
+  startChain();
+}
+init();
+</script>
+  </body>
+</html>
